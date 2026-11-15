@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Signal Phrase Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+  :root{
+    --bg:#EDE6D6;
+    --bg-card:#FBF8F0;
+    --bg-bank:#E3DAC2;
+    --ink:#2B2420;
+    --ink-soft:#6b6052;
+    --line:#D8CBAE;
+    --topic:#B9842C;      --topic-tint:#F6E9CB;
+    --phrase:#7A5C9E;     --phrase-tint:#EFE7F7;
+    --evidence:#3F6E74;   --evidence-tint:#DEEDED;
+    --analysis:#A23E27;   --analysis-tint:#F6E1DA;
+    --merging:#5C7A52;    --merging-tint:#E6EEE0;
+    --correct:#3F7A4E;    --correct-soft:#DEEBDD;
+    --incorrect:#B23B2A;  --incorrect-soft:#F3DAD4;
+    --neutral-soft:#EFE7D6;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1C1812; --bg-card:#262019; --bg-bank:#231E16; --ink:#EDE6D6; --ink-soft:#BDB29B; --line:#3A3327;
+      --topic:#D9A440; --topic-tint:#332812;
+      --phrase:#B79BDB; --phrase-tint:#2A2333;
+      --evidence:#6FA8AE; --evidence-tint:#1C2A2A;
+      --analysis:#D9654A; --analysis-tint:#301F19;
+      --merging:#88AC78; --merging-tint:#202A1C;
+      --correct:#6FAE7C; --correct-soft:#1E2E20;
+      --incorrect:#E08370; --incorrect-soft:#3A2019;
+      --neutral-soft:#2A2419;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1C1812; --bg-card:#262019; --bg-bank:#231E16; --ink:#EDE6D6; --ink-soft:#BDB29B; --line:#3A3327;
+    --topic:#D9A440; --topic-tint:#332812;
+    --phrase:#B79BDB; --phrase-tint:#2A2333;
+    --evidence:#6FA8AE; --evidence-tint:#1C2A2A;
+    --analysis:#D9654A; --analysis-tint:#301F19;
+    --merging:#88AC78; --merging-tint:#202A1C;
+    --correct:#6FAE7C; --correct-soft:#1E2E20;
+    --incorrect:#E08370; --incorrect-soft:#3A2019;
+    --neutral-soft:#2A2419;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--ink); font-family:"Lora",Georgia,serif; line-height:1.5;
+    -webkit-font-smoothing:antialiased; overscroll-behavior:none;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 60px;}
+
+  /* ---- AI credit badge (top right of the page) ---- */
+  .top-bar{display:flex;justify-content:flex-end;margin-bottom:14px;}
+  .ai-badge{
+    display:inline-block;font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:500;font-size:13.5px;
+    color:var(--ink);background:var(--bg-card);border:1px solid var(--ink-soft);border-radius:999px;padding:6px 14px;
+    text-align:right;
+  }
+
+  header.top{margin-bottom:18px;}
+  h1{
+    font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:clamp(28px,4vw,40px);
+    margin:0 0 6px; letter-spacing:-0.01em;
+  }
+  .sub{color:var(--ink-soft);font-size:16px;max-width:70ch;margin:0;}
+
+  .jump{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0;}
+  .jump a{
+    font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:13.5px;color:var(--ink);text-decoration:none;
+    border:1px solid var(--line);background:var(--bg-card);border-radius:999px;padding:6px 13px;
+  }
+  .jump a:hover{border-color:var(--ink);}
+
+  .team-banner{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0;}
+  .team-letter{
+    flex:1 1 150px; display:flex; align-items:center; gap:10px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+  }
+  .team-letter .big{font-family:"Fraunces",Georgia,serif; font-weight:700; font-size:26px; width:34px; text-align:center; flex:none;}
+  .team-letter .small{font-size:13px; color:var(--ink-soft); line-height:1.3;}
+  .team-letter.t .big{color:var(--topic);}
+  .team-letter.e .big{color:var(--evidence);}
+  .team-letter.a .big{color:var(--analysis);}
+  .team-letter.m .big{color:var(--merging);}
+
+  .section-divider{display:flex; align-items:center; gap:14px; margin:46px 0 18px;}
+  .section-divider .line{flex:1; height:1px; background:var(--line);}
+  .section-divider .label{
+    font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:16px; color:var(--ink-soft);
+  }
+  .section-intro{color:var(--ink-soft); font-size:15px; margin:0 0 16px; max-width:72ch;}
+
+  /* ---- tier colours ---- */
+  .tier-poor{--c:var(--incorrect);--t:var(--incorrect-soft);}
+  .tier-good{--c:var(--topic);--t:var(--topic-tint);}
+  .tier-great{--c:var(--evidence);--t:var(--evidence-tint);}
+  .tier-trans{--c:var(--phrase);--t:var(--phrase-tint);}
+
+  /* ---- Part 1: ladder ---- */
+  .ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+  .tier{background:var(--bg-card);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:14px 16px 16px;}
+  .tier h3{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:18px;color:var(--c);margin:0 0 4px;}
+  .tier .tier-def{font-size:14px;color:var(--ink-soft);margin:0 0 6px;}
+  .tier ul{list-style:none;padding:0;margin:8px 0 0;}
+  .tier li{font-style:italic;background:var(--t);border-radius:6px;padding:7px 10px;margin:6px 0;font-size:14.5px;line-height:1.35;}
+  .recipe{
+    margin-top:16px;background:var(--bg-card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;font-size:15px;
+  }
+  .recipe strong{font-family:"Fraunces",Georgia,serif;}
+  .toolbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px;}
+  .tool-card{background:var(--bg-card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;}
+  .tool-card h4{font-family:"Fraunces",Georgia,serif;font-size:14.5px;margin:0 0 4px;color:var(--phrase);}
+  .tool-card p{margin:0;color:var(--ink-soft);}
+  .tool-card.verbs h4{color:var(--evidence);}
+
+  /* ---- shared controls ---- */
+  .progress-row{display:flex;align-items:center;gap:14px;margin:18px 0 10px;flex-wrap:wrap;}
+  .progress-track{flex:1 1 220px;height:10px;background:var(--bg-bank);border-radius:6px;overflow:hidden;border:1px solid var(--line);}
+  .progress-fill{height:100%;width:0%;background:var(--correct);transition:width .35s ease;}
+  .progress-label{font-family:"Fraunces",Georgia,serif;font-size:14px;color:var(--ink-soft);white-space:nowrap;}
+  .btn{
+    font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:14px;
+    border:1px solid var(--ink);background:transparent;color:var(--ink);
+    padding:9px 16px;border-radius:7px;cursor:pointer;
+    transition:background .15s ease, color .15s ease, opacity .15s ease;
+  }
+  .btn:hover{background:var(--ink);color:var(--bg-card);}
+  .btn.primary{background:var(--ink);color:var(--bg-card);}
+  .btn.primary:hover{opacity:.85;}
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  .btn:disabled:hover{background:transparent;color:var(--ink);}
+  .btn.primary:disabled:hover{background:var(--ink);color:var(--bg-card);}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+  .bank-section{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);
+    padding:12px 0 16px;border-bottom:1px solid var(--line);margin-bottom:26px;
+  }
+  .bank-title{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:15px;color:var(--ink-soft);margin:0 0 10px;}
+  .bank{
+    background:var(--bg-bank);border:1px dashed var(--line);border-radius:10px;padding:14px;
+    display:flex;flex-wrap:wrap;gap:10px;min-height:58px;
+    max-height:210px;overflow-y:auto;
+  }
+  .bank.plain{max-height:none;}
+  .bank:empty::after{
+    content:"Everything is placed.";
+    color:var(--ink-soft);font-style:italic;font-size:14px;padding:8px;
+  }
+
+  .card{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:9px;
+    padding:10px 13px 10px 30px;font-size:14.5px;line-height:1.4;max-width:300px;
+    cursor:grab;box-shadow:0 1px 0 rgba(0,0,0,.04);user-select:none;position:relative;
+    touch-action:none;
+    transition:box-shadow .12s ease, border-color .12s ease, opacity .12s ease;
+  }
+  .card::before{
+    content:"⠿"; position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    color:var(--ink-soft); font-size:15px; letter-spacing:-2px;
+  }
+  .card:hover{box-shadow:0 3px 10px rgba(0,0,0,.09);}
+  .card:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .card.selected{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink);}
+  .card.shake{animation:shake .4s ease;border-color:var(--incorrect);}
+  .card.ghost{
+    position:fixed; pointer-events:none; z-index:1000; opacity:.95;
+    box-shadow:0 12px 28px rgba(0,0,0,.22); transform:rotate(-1deg) scale(1.03);
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);} 20%{transform:translateX(-5px);} 40%{transform:translateX(5px);}
+    60%{transform:translateX(-4px);} 80%{transform:translateX(4px);}
+  }
+
+  /* ---- Part 2: sorter ---- */
+  .sort-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:6px;}
+  .bucket{
+    background:var(--bg-card);border:2px dashed var(--c);border-radius:12px;padding:12px;
+    display:flex;flex-direction:column;gap:10px;min-height:150px;
+  }
+  .bucket.dragover{outline:3px solid var(--ink);outline-offset:-3px;}
+  .bucket h3{font-family:"Fraunces",Georgia,serif;font-size:17px;margin:0;color:var(--c);}
+  .bucket .bucket-def{font-size:13px;color:var(--ink-soft);margin:2px 0 0;line-height:1.35;}
+  .bucket-list{display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card.placed{max-width:none;padding-left:13px;cursor:pointer;}
+  .card.placed::before{display:none;}
+  .card.correct{border-color:var(--correct);background:var(--correct-soft);cursor:default;}
+  .card.bad{border-color:var(--incorrect);background:var(--incorrect-soft);}
+  .card .why{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:4px;font-style:italic;}
+  .card .why.bad-msg{color:var(--incorrect);}
+  .check-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .check-status{font-size:13px;color:var(--ink-soft);font-style:italic;}
+  .sort-actions{margin-top:16px;}
+
+  /* ---- Part 3: transitional quiz ---- */
+  .tq{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px;max-width:820px;}
+  .tq-label{display:block;font-family:"Fraunces",Georgia,serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:3px;}
+  .tq-context{border-left:4px solid var(--line);padding:2px 0 2px 12px;margin-bottom:14px;font-size:15.5px;}
+  .tq-next{font-size:15.5px;margin-bottom:14px;}
+  .tq-gap{
+    display:inline-block;color:var(--phrase);background:var(--phrase-tint);border-bottom:2px dashed var(--phrase);
+    font-style:italic;padding:0 6px;border-radius:4px;
+  }
+  .tq-gap.filled{border-bottom-style:solid;font-style:normal;font-weight:500;}
+  .tq-options{display:flex;flex-direction:column;gap:8px;}
+  .tq-opt{
+    text-align:left;font-family:"Lora",Georgia,serif;font-size:15px;color:var(--ink);background:var(--bg);
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;
+  }
+  .tq-opt:hover:not(:disabled){border-color:var(--ink);}
+  .tq-opt:disabled{cursor:default;}
+  .tq-opt.correct{border-color:var(--correct);background:var(--correct-soft);}
+  .tq-opt.wrong{border-color:var(--incorrect);background:var(--incorrect-soft);}
+  .tq-feedback{font-size:14px;margin-top:10px;}
+  .tq-feedback.ok{color:var(--correct);}
+  .tq-feedback.no{color:var(--incorrect);}
+  .tq-tag{
+    display:inline-block;font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:12px;color:var(--phrase);
+    background:var(--phrase-tint);border-radius:999px;padding:2px 10px;margin-right:6px;
+  }
+
+  /* ---- Part 4: paragraph boards ---- */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px;}
+  .tab{
+    font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:14px;color:var(--ink);background:var(--bg-card);
+    border:1px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer;
+  }
+  .tab:hover{border-color:var(--ink);}
+  .tab.active{background:var(--ink);color:var(--bg-card);border-color:var(--ink);}
+  .board-panel{display:none;}
+  .board-panel.active{display:block;}
+
+  .para-columns.single-col{display:grid;grid-template-columns:minmax(0,680px);justify-content:center;}
+  .para-col{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:16px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .para-col h2{font-family:"Fraunces",Georgia,serif;font-size:16px;font-weight:600;margin:0;color:var(--ink);}
+
+  .slot{
+    border:2px dashed var(--line);border-radius:8px;min-height:60px;padding:10px 12px 10px 40px;font-size:14px;
+    display:flex;flex-direction:column;justify-content:center;gap:4px;position:relative;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .slot .letter-badge{
+    position:absolute; left:10px; top:10px;
+    width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Fraunces",Georgia,serif; font-weight:700; font-size:12.5px; color:#fff;
+  }
+  .slot[data-letter="T"]{background:var(--topic-tint);} .slot[data-letter="T"] .letter-badge{background:var(--topic);}
+  .slot[data-letter="E"]{background:transparent;} .slot[data-letter="E"] .letter-badge{background:var(--evidence);}
+  .slot[data-letter="A"]{background:var(--analysis-tint);} .slot[data-letter="A"] .letter-badge{background:var(--analysis);}
+  .slot[data-letter="M"]{background:var(--merging-tint);} .slot[data-letter="M"] .letter-badge{background:var(--merging);}
+
+  .slot .slot-label{font-family:"Fraunces",Georgia,serif;font-size:12px;color:var(--ink-soft);}
+  .slot .slot-content{font-style:italic;color:var(--ink-soft);}
+  .slot .slot-content.has-text{font-style:normal;color:var(--ink);}
+  .slot.dragover{outline:3px solid var(--ink); outline-offset:-3px;}
+  .slot .tick{font-size:12.5px;font-style:italic;}
+
+  .slot.state-filled{border-style:solid;border-color:var(--ink-soft);background:var(--neutral-soft) !important;cursor:pointer;}
+  .slot.state-correct{border-style:solid;border-color:var(--correct);background:var(--correct-soft) !important;cursor:default;}
+  .slot.state-correct .slot-label{color:var(--correct);font-weight:600;}
+  .slot.state-correct .tick{color:var(--correct);}
+  .slot.state-incorrect{border-style:solid;border-color:var(--incorrect);background:var(--incorrect-soft) !important;cursor:pointer;}
+  .slot.state-incorrect .slot-label{color:var(--incorrect);font-weight:600;}
+  .slot.state-incorrect .tick{color:var(--incorrect);}
+
+  .evidence-group{border:2px dashed var(--evidence);border-radius:8px;overflow:hidden;background:var(--evidence-tint);}
+  .evidence-group.trans{border-color:var(--phrase);background:var(--phrase-tint);}
+  .evidence-group .group-title{
+    font-family:"Fraunces",Georgia,serif;font-size:12.5px;color:var(--evidence);padding:8px 12px 0;
+    display:flex; align-items:center; gap:6px;
+  }
+  .evidence-group.trans .group-title{color:var(--phrase);}
+  .evidence-group .group-title .letter-badge{
+    width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:11px;color:#fff;background:var(--evidence);
+  }
+  .evidence-group.trans .group-title .letter-badge{background:var(--phrase);}
+  .evidence-group .slot{border:none;border-radius:0;min-height:48px;}
+  .evidence-group .slot.pair-first{border-bottom:1px dashed var(--line);}
+  .evidence-group .slot.state-filled,
+  .evidence-group .slot.state-correct,
+  .evidence-group .slot.state-incorrect{border:none;}
+
+  .reveal-panel{margin-top:30px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;display:none;max-width:780px;margin-left:auto;margin-right:auto;}
+  .reveal-panel.show{display:block;}
+  .reveal-panel h2{font-family:"Fraunces",Georgia,serif;margin-top:0;font-size:20px;}
+  .reveal-panel h3{font-family:"Fraunces",Georgia,serif;font-size:15px;margin:18px 0 6px;}
+  .reveal-panel p{font-size:16px;}
+  .reveal-panel ul{padding-left:18px;margin:6px 0;font-size:14.5px;}
+  .reveal-panel li{margin:6px 0;}
+  .sp{padding:1px 4px;border-radius:4px;border-bottom:2px solid var(--c);background:var(--t);}
+  .sp.sp1{--c:var(--evidence);--t:var(--evidence-tint);}
+  .sp.sp2{--c:var(--phrase);--t:var(--phrase-tint);}
+  .legend{font-size:13px;color:var(--ink-soft);font-style:italic;}
+  .counter-note{background:var(--topic-tint);border-left:4px solid var(--topic);border-radius:6px;padding:10px 14px;font-size:14.5px;margin-top:14px;}
+
+  @media (max-width:640px){
+    .bank-section{position:static;}
+    .top-bar{justify-content:flex-end;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .progress-fill{transition:none;}
+    .card.shake{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top-bar">
+    <span class="ai-badge">Prepared with AI support, reviewed by Mr. Johnson</span>
+  </div>
+
+  <header class="top">
+    <h1>Signal Phrase Studio</h1>
+    <p class="sub">A signal phrase is the short lead-in that tells your reader who the evidence comes from and why it matters. First learn what separates a poor one from a great one, then use them to build T.E.A.M. paragraphs. Drag a card (mouse or finger), or tap a card and then tap where it goes.</p>
+    <nav class="jump" aria-label="Sections">
+      <a href="#part1">1. The ladder</a>
+      <a href="#part2">2. Sort the phrases</a>
+      <a href="#part3">3. Make it transitional</a>
+      <a href="#part4">4. Build the paragraphs</a>
+    </nav>
+  </header>
+
+  <div class="team-banner">
+    <div class="team-letter t"><div class="big">T</div><div class="small">Topic sentence — the paragraph's main point.</div></div>
+    <div class="team-letter e"><div class="big">E</div><div class="small">Evidence — a signal phrase plus the specific facts that back it up.</div></div>
+    <div class="team-letter a"><div class="big">A</div><div class="small">Analysis — why or how the evidence proves the point.</div></div>
+    <div class="team-letter m"><div class="big">M</div><div class="small">Merging — sums up the idea and glides into what's next.</div></div>
+  </div>
+
+  <!-- ============ PART 1 ============ -->
+  <div class="section-divider" id="part1"><span class="label">Part 1 — The signal phrase ladder</span><span class="line"></span></div>
+  <p class="section-intro">The same piece of evidence can be introduced in four very different ways. Each step up the ladder gives the reader more help.</p>
+
+  <div class="ladder">
+    <div class="tier tier-poor">
+      <h3>Poor</h3>
+      <p class="tier-def">No clear source, a weak verb, or no sense of why the evidence matters. The reader has to guess.</p>
+      <ul>
+        <li>Here is a quote:</li>
+        <li>The book says that</li>
+        <li>They said that</li>
+      </ul>
+    </div>
+    <div class="tier tier-good">
+      <h3>Good</h3>
+      <p class="tier-def">Names the source and uses a clear verb. Solid, but it doesn't say how the evidence helps your argument.</p>
+      <ul>
+        <li>According to Harari,</li>
+        <li>Harari explains that</li>
+        <li>In Sapiens, Harari writes that</li>
+      </ul>
+    </div>
+    <div class="tier tier-great">
+      <h3>Great</h3>
+      <p class="tier-def">Names the source, uses a precise verb, and shows what the evidence is doing for your claim.</p>
+      <ul>
+        <li>Harari backs up this claim with a striking example:</li>
+        <li>To show how powerful fire was, Harari points out that</li>
+      </ul>
+    </div>
+    <div class="tier tier-trans">
+      <h3>Great + transitional</h3>
+      <p class="tier-def">Everything a great one does, plus a link back to the sentence before it, so the paragraph glides.</p>
+      <ul>
+        <li>Even more surprising, Harari reveals that</li>
+        <li>Because of this, Harari explains that</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="recipe">
+    <strong>The recipe:</strong> <em>who</em> is speaking + a <em>precise verb</em> + <em>why</em> the evidence is here. For a transitional signal phrase, add one more ingredient: a <em>link</em> back to the idea you just finished.
+  </div>
+
+  <div class="toolbox">
+    <div class="tool-card verbs">
+      <h4>Pick the verb that matches the job</h4>
+      <p><em>argues</em> for a claim · <em>illustrates</em> for an example · <em>reveals</em> for a surprising fact · <em>warns</em> for a danger · <em>challenges</em> for pushing back · <em>points out</em> for a detail the reader might miss</p>
+    </div>
+    <div class="tool-card">
+      <h4>Adds on</h4>
+      <p>Building on this, · Just as importantly, · On top of that, · Beyond that,</p>
+    </div>
+    <div class="tool-card">
+      <h4>Contrasts</h4>
+      <p>Yet · Even so, · In contrast, · However,</p>
+    </div>
+    <div class="tool-card">
+      <h4>Shows a result</h4>
+      <p>Because of this, · As a result, · This led to…</p>
+    </div>
+    <div class="tool-card">
+      <h4>Gives an example</h4>
+      <p>To illustrate this idea, · For instance, · To see this in action,</p>
+    </div>
+  </div>
+
+  <!-- ============ PART 2 ============ -->
+  <div class="section-divider" id="part2"><span class="label">Part 2 — Sort the signal phrases</span><span class="line"></span></div>
+  <p class="section-intro">Twelve signal phrases, three buckets. Place every card, then check. Once a card is locked in as correct, you'll see why it belongs there.</p>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="sProgressFill"></div></div>
+    <div class="progress-label" id="sProgressLabel">0 / 12 correct</div>
+    <div class="btn-row">
+      <button class="btn" id="sResetBtn">Reset</button>
+    </div>
+  </div>
+
+  <div class="bank plain" id="sBank"></div>
+
+  <div class="sort-grid" id="sGrid"></div>
+
+  <div class="check-row sort-actions">
+    <button class="btn primary" id="sCheckBtn" disabled>Check my sorting</button>
+    <span class="check-status" id="sStatus"></span>
+  </div>
+
+  <!-- ============ PART 3 ============ -->
+  <div class="section-divider" id="part3"><span class="label">Part 3 — Make it transitional</span><span class="line"></span></div>
+  <p class="section-intro">A transitional signal phrase has to do two jobs at once: introduce the new evidence <em>and</em> connect it to the sentence before it. Read the paragraph so far, figure out how the new evidence relates to it (adds on, contrasts, shows a result, or gives an example), and choose the phrase that fits.</p>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="tProgressFill"></div></div>
+    <div class="progress-label" id="tProgressLabel">0 / 4 correct</div>
+    <div class="btn-row">
+      <button class="btn" id="tResetBtn">Reset</button>
+    </div>
+  </div>
+
+  <div id="tQuiz"></div>
+
+  <!-- ============ PART 4 ============ -->
+  <div class="section-divider" id="part4"><span class="label">Part 4 — Build the T.E.A.M. paragraphs</span><span class="line"></span></div>
+  <p class="section-intro">Each paragraph has <strong>two</strong> pieces of evidence. The first needs a <em>great</em> signal phrase. The second needs a <em>great + transitional</em> one that links back to the first. Heads up: four of the phrase cards in each bank are decoys. Start with the Sapiens warm-up, then try the three argument paragraphs.</p>
+
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div id="panels"></div>
+
+</div>
+
+<script>
+(function(){
+
+  var DRAG_THRESHOLD = 6;
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  function el(tag, cls, text){
+    var e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(text !== undefined && text !== null) e.textContent = text;
+    return e;
+  }
+  function cssEscape(s){ return s.replace(/[^a-zA-Z0-9_-]/g, "\\$&"); }
+  function lowerFirst(s){ return s.charAt(0).toLowerCase() + s.slice(1); }
+
+  // ---------- shared drag helper (pointer events: mouse, pen, touch) ----------
+  // opts: { dropSelector, canDrop(targetEl), onDrop(targetEl), onTap() }
+  function attachDrag(card, opts){
+    card.addEventListener("pointerdown", function(e){
+      if(e.button !== undefined && e.button !== 0) return;
+      var startX = e.clientX, startY = e.clientY;
+      var dragging = false, ghost = null, current = null;
+
+      function under(x, y){
+        if(ghost) ghost.style.display = "none";
+        var t = document.elementFromPoint(x, y);
+        if(ghost) ghost.style.display = "";
+        return t ? t.closest(opts.dropSelector) : null;
+      }
+
+      function onMove(ev){
+        var dx = ev.clientX - startX, dy = ev.clientY - startY;
+        if(!dragging){
+          if(Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+          dragging = true;
+          var rect = card.getBoundingClientRect();
+          ghost = card.cloneNode(true);
+          ghost.classList.add("ghost");
+          ghost.style.left = rect.left + "px";
+          ghost.style.top = rect.top + "px";
+          ghost.style.width = rect.width + "px";
+          document.body.appendChild(ghost);
+          card.style.opacity = "0.3";
+        }
+        var r2 = ghost.getBoundingClientRect();
+        ghost.style.left = (ev.clientX - r2.width/2) + "px";
+        ghost.style.top = (ev.clientY - r2.height/2) + "px";
+        var t = under(ev.clientX, ev.clientY);
+        if(t !== current){
+          if(current) current.classList.remove("dragover");
+          current = t;
+          if(current && (!opts.canDrop || opts.canDrop(current))) current.classList.add("dragover");
+        }
+      }
+
+      function onUp(){
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        document.removeEventListener("pointercancel", onUp);
+        if(dragging){
+          if(ghost) ghost.remove();
+          card.style.opacity = "";
+          if(current){
+            current.classList.remove("dragover");
+            opts.onDrop(current);
+          }
+        } else {
+          opts.onTap();
+        }
+      }
+
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+      document.addEventListener("pointercancel", onUp);
+    });
+
+    card.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); opts.onTap(); }
+    });
+  }
+
+  // =====================================================================
+  // PART 2 — SORTER
+  // =====================================================================
+  var SORT_BUCKETS = [
+    {tier:"poor",  name:"Poor",  def:"Vague, no source, or no purpose.", cls:"tier-poor"},
+    {tier:"good",  name:"Good",  def:"Names the source and uses a clear verb.", cls:"tier-good"},
+    {tier:"great", name:"Great", def:"Source + precise verb + shows how the evidence helps the claim.", cls:"tier-great"}
+  ];
+
+  var SORT_ITEMS = [
+    {id:"s1",  tier:"poor",  text:"Here is some proof:", why:"No source is named, and it announces 'proof' instead of showing why the evidence matters."},
+    {id:"s2",  tier:"poor",  text:"In the text it says that", why:"'The text' doesn't name an author, and 'it says' is a weak, generic verb."},
+    {id:"s3",  tier:"poor",  text:"Someone said that", why:"Who is 'someone'? An unnamed source gives the reader no reason to trust the evidence."},
+    {id:"s4",  tier:"poor",  text:"Evidence:", why:"A label, not a signal phrase. It names no source and gives no purpose."},
+
+    {id:"s5",  tier:"good",  text:"Harari states that", why:"Clear source and verb, but 'states' is neutral. It says nothing about why this evidence is here."},
+    {id:"s6",  tier:"good",  text:"Harari reports that", why:"Names the source with a clear verb, but doesn't connect the evidence to your argument."},
+    {id:"s7",  tier:"good",  text:"In Chapter 3, Harari says that", why:"Names the author and where to find it. Solid, but 'says' is plain and there's no purpose."},
+    {id:"s8",  tier:"good",  text:"Harari writes that", why:"Accurate and clear, but it could do more to show what the evidence proves."},
+
+    {id:"s9",  tier:"great", text:"To show that farming wasn't progress for everyone, Harari points out that", why:"Opens with the purpose, then names the source and uses a precise verb."},
+    {id:"s10", tier:"great", text:"Historian Yuval Noah Harari challenges the idea of progress by revealing that", why:"Adds credentials, a strong verb, and shows how the evidence pushes against an idea."},
+    {id:"s11", tier:"great", text:"Harari strengthens his argument by noting that", why:"Names the source and says exactly what the evidence does for the argument."},
+    {id:"s12", tier:"great", text:"As evidence that shared stories are powerful, Harari describes", why:"States what the evidence proves, then names the source with a purposeful verb."}
+  ];
+
+  function buildSorter(){
+    var bankEl = document.getElementById("sBank");
+    var gridEl = document.getElementById("sGrid");
+    var checkBtn = document.getElementById("sCheckBtn");
+    var resetBtn = document.getElementById("sResetBtn");
+    var statusEl = document.getElementById("sStatus");
+    var fillEl = document.getElementById("sProgressFill");
+    var labelEl = document.getElementById("sProgressLabel");
+
+    var state = {};
+    var order = [];
+    var selectedId = null;
+    var bucketLists = {};
+    var bucketEls = {};
+
+    SORT_BUCKETS.forEach(function(b){
+      var bucket = el("div", "bucket " + b.cls);
+      bucket.dataset.tier = b.tier;
+      var head = el("div");
+      head.appendChild(el("h3", null, b.name));
+      head.appendChild(el("p", "bucket-def", b.def));
+      bucket.appendChild(head);
+      var list = el("div", "bucket-list");
+      bucket.appendChild(list);
+      bucket.addEventListener("click", function(e){
+        if(e.target.closest(".card")) return;
+        if(selectedId){ moveTo(selectedId, b.tier); }
+      });
+      bucketLists[b.tier] = list;
+      bucketEls[b.tier] = bucket;
+      gridEl.appendChild(bucket);
+    });
+
+    function find(id){ return SORT_ITEMS.find(function(i){ return i.id === id; }); }
+
+    function moveTo(id, tier){
+      var st = state[id];
+      if(st.status === "correct") return;
+      st.bucket = tier;
+      st.status = null;
+      selectedId = null;
+      statusEl.textContent = "";
+      render();
+    }
+
+    function makeCard(it){
+      var st = state[it.id];
+      var card = el("div", "card", it.text);
+      card.dataset.id = it.id;
+
+      if(st.bucket){
+        card.classList.add("placed");
+        if(st.status === "correct"){
+          card.classList.add("correct");
+          card.appendChild(el("span", "why", "✓ " + it.why));
+        } else {
+          if(st.status === "incorrect"){
+            card.classList.add("bad");
+            card.appendChild(el("span", "why bad-msg", "✕ Not quite. Tap to move it back and try another bucket."));
+          } else {
+            card.appendChild(el("span", "why", "Tap to move it back."));
+          }
+          card.tabIndex = 0;
+          card.addEventListener("click", function(e){
+            e.stopPropagation();
+            moveTo(it.id, null);
+          });
+          card.addEventListener("keydown", function(e){
+            if(e.key === "Enter" || e.key === " "){ e.preventDefault(); moveTo(it.id, null); }
+          });
+        }
+      } else {
+        card.tabIndex = 0;
+        if(selectedId === it.id) card.classList.add("selected");
+        attachDrag(card, {
+          dropSelector: ".bucket",
+          onDrop: function(target){ moveTo(it.id, target.dataset.tier); },
+          onTap: function(){
+            selectedId = (selectedId === it.id) ? null : it.id;
+            render();
+          }
+        });
+      }
+      return card;
+    }
+
+    function render(){
+      bankEl.innerHTML = "";
+      SORT_BUCKETS.forEach(function(b){ bucketLists[b.tier].innerHTML = ""; });
+      var inBank = 0, correct = 0;
+      order.forEach(function(it){
+        var st = state[it.id];
+        var card = makeCard(it);
+        if(st.bucket){ bucketLists[st.bucket].appendChild(card); }
+        else { bankEl.appendChild(card); inBank++; }
+        if(st.status === "correct") correct++;
+      });
+      checkBtn.disabled = inBank > 0;
+      fillEl.style.width = (correct / SORT_ITEMS.length * 100) + "%";
+      labelEl.textContent = correct + " / " + SORT_ITEMS.length + " correct";
+    }
+
+    function check(){
+      var correct = 0, placed = 0;
+      SORT_ITEMS.forEach(function(it){
+        var st = state[it.id];
+        if(st.bucket && st.status !== "correct"){
+          st.status = (st.bucket === it.tier) ? "correct" : "incorrect";
+        }
+        if(st.status === "correct") correct++;
+        if(st.bucket) placed++;
+      });
+      render();
+      if(correct === SORT_ITEMS.length){
+        statusEl.textContent = "All 12 sorted correctly. You can hear the difference now.";
+      } else {
+        statusEl.textContent = correct + " of " + SORT_ITEMS.length + " correct. Tap a red card to move it and try again.";
+      }
+    }
+
+    function reset(){
+      SORT_ITEMS.forEach(function(it){ state[it.id] = {bucket:null, status:null}; });
+      order = shuffle(SORT_ITEMS);
+      selectedId = null;
+      statusEl.textContent = "";
+      render();
+    }
+
+    checkBtn.addEventListener("click", check);
+    resetBtn.addEventListener("click", reset);
+    reset();
+  }
+
+  // =====================================================================
+  // PART 3 — TRANSITIONAL QUIZ
+  // =====================================================================
+  var TQ_ITEMS = [
+    {
+      tag:"Adds on",
+      context:"Harari argues that foragers often lived healthier lives than early farmers. He starts with their diet: because foragers ate many different foods, one failed crop could not leave them hungry.",
+      evidence:"foragers also faced less infectious disease, since they lived in small groups that kept moving instead of in crowded villages.",
+      correct:{text:"Building on this point, Harari adds that", why:"'Building on this point' links back and signals that more support is coming, and 'adds that' names the source with a purposeful verb."},
+      wrong:[
+        {text:"In contrast, Harari points out that", why:"'In contrast' signals a change of direction, but this evidence agrees with the sentence before it."},
+        {text:"In Sapiens, Harari writes that", why:"It names the source, but nothing connects this evidence to the earlier one. The reader has to guess how they fit together."}
+      ]
+    },
+    {
+      tag:"Contrasts",
+      context:"Most people assume that farming was a giant leap forward that made life easier for everyone.",
+      evidence:"early farmers often worked longer hours than foragers and ate a less varied diet.",
+      correct:{text:"Yet Harari challenges this belief by revealing that", why:"'Yet' signals a turn, and 'challenges this belief' points straight back at the sentence before it."},
+      wrong:[
+        {text:"Similarly, Harari agrees that", why:"'Similarly' points to agreement, but Harari is pushing back against the belief in the previous sentence."},
+        {text:"According to Harari,", why:"It names the source, but it doesn't connect to the belief it is answering."}
+      ]
+    },
+    {
+      tag:"Shows a result",
+      context:"Cooking meant that the human body no longer had to work as hard to digest food.",
+      evidence:"human intestines shrank over time, freeing up energy that could support bigger brains.",
+      correct:{text:"Because of this shortcut, Harari explains that", why:"'Because of this shortcut' ties the new evidence to the cause in the sentence before it."},
+      wrong:[
+        {text:"To begin with, Harari explains that", why:"'To begin with' signals the first item in a list, but this evidence follows from the idea before it."},
+        {text:"On the other hand, Harari explains that", why:"'On the other hand' signals a contrast, but this evidence continues the same line of thought."}
+      ]
+    },
+    {
+      tag:"Gives an example",
+      context:"Harari argues that shared stories let huge numbers of strangers cooperate.",
+      evidence:"a company like Peugeot can own property and be sued in court, even though no one can ever touch it.",
+      correct:{text:"To illustrate this idea, Harari describes how", why:"'To illustrate this idea' tells the reader an example is coming and connects it to the claim."},
+      wrong:[
+        {text:"In conclusion, Harari describes how", why:"'In conclusion' belongs at the end of a paragraph, not in the middle of the evidence."},
+        {text:"Harari describes how", why:"It names the source, but there's no link to the claim the example is supposed to prove."}
+      ]
+    }
+  ];
+
+  function buildTransQuiz(){
+    var root = document.getElementById("tQuiz");
+    var fillEl = document.getElementById("tProgressFill");
+    var labelEl = document.getElementById("tProgressLabel");
+    var resetBtn = document.getElementById("tResetBtn");
+    var solved = 0;
+
+    function updateProgress(){
+      fillEl.style.width = (solved / TQ_ITEMS.length * 100) + "%";
+      labelEl.textContent = solved + " / " + TQ_ITEMS.length + " correct";
+    }
+
+    function render(){
+      root.innerHTML = "";
+      solved = 0;
+      TQ_ITEMS.forEach(function(item){
+        var box = el("div", "tq");
+
+        var ctx = el("div", "tq-context");
+        ctx.appendChild(el("span", "tq-label", "The paragraph so far"));
+        ctx.appendChild(document.createTextNode(item.context));
+        box.appendChild(ctx);
+
+        var next = el("div", "tq-next");
+        next.appendChild(el("span", "tq-label", "Next sentence"));
+        var gap = el("span", "tq-gap", "[ choose a signal phrase ]");
+        next.appendChild(gap);
+        next.appendChild(document.createTextNode(" " + item.evidence));
+        box.appendChild(next);
+
+        var opts = el("div", "tq-options");
+        var feedback = el("div", "tq-feedback");
+        var all = [{text:item.correct.text, ok:true, why:item.correct.why}].concat(
+          item.wrong.map(function(w){ return {text:w.text, ok:false, why:w.why}; })
+        );
+        var done = false;
+        shuffle(all).forEach(function(o){
+          var b = el("button", "tq-opt", o.text);
+          b.type = "button";
+          b.addEventListener("click", function(){
+            if(done) return;
+            if(o.ok){
+              done = true;
+              b.classList.add("correct");
+              gap.textContent = o.text;
+              gap.classList.add("filled");
+              feedback.className = "tq-feedback ok";
+              feedback.innerHTML = "";
+              feedback.appendChild(el("span", "tq-tag", item.tag));
+              feedback.appendChild(document.createTextNode("✓ " + o.why));
+              Array.prototype.forEach.call(opts.querySelectorAll(".tq-opt"), function(x){ x.disabled = true; });
+              solved++;
+              updateProgress();
+            } else {
+              b.classList.add("wrong");
+              b.disabled = true;
+              feedback.className = "tq-feedback no";
+              feedback.textContent = "✕ " + o.why + " Try another one.";
+            }
+          });
+          opts.appendChild(b);
+        });
+        box.appendChild(opts);
+        box.appendChild(feedback);
+        root.appendChild(box);
+      });
+      updateProgress();
+    }
+
+    resetBtn.addEventListener("click", render);
+    render();
+  }
+
+  // =====================================================================
+  // PART 4 — T.E.A.M. PARAGRAPH BOARDS (two pieces of evidence each)
+  // =====================================================================
+  var ROLES = ["topic","phrase1","evidence1","phrase2","evidence2","analysis","merging"];
+  var META = {
+    topic:     {letter:"T", label:"T — Topic Sentence",                ph:"Drop the topic sentence here"},
+    phrase1:   {letter:"E", label:"Signal Phrase 1",                    ph:"Drop a signal phrase here"},
+    evidence1: {letter:"E", label:"Evidence 1",                         ph:"Drop the first piece of evidence here"},
+    phrase2:   {letter:"E", label:"Signal Phrase 2 (transitional)",     ph:"Drop a signal phrase that links back here"},
+    evidence2: {letter:"E", label:"Evidence 2",                         ph:"Drop the second piece of evidence here"},
+    analysis:  {letter:"A", label:"A — Analysis",                       ph:"Drop the analysis here"},
+    merging:   {letter:"M", label:"M — Merging Sentence",               ph:"Drop the merging sentence here"}
+  };
+  function roleKind(role){ return role.indexOf("phrase") === 0 ? "phrase" : "sentence"; }
+
+  var MIS1 = "Right paragraph, but this phrase doesn't link back to anything. It works best as the first signal phrase.";
+  function mis2(opener){ return "This one starts with '" + opener + "', which links back to an earlier point. It can't open the evidence, so try it second."; }
+
+  var BOARDS = [
+    {
+      id:"harari",
+      tab:"Warm-up: Sapiens",
+      title:"Warm-Up Paragraph — Sapiens, Chapter 4",
+      intro:"Harari argues that humans, not climate change, caused the extinction of giant animals. Build the paragraph, paying special attention to the two signal phrases.",
+      counter:"Not everyone agrees with Harari. Some scientists argue that climate change, or a mix of climate and hunting, played a bigger role than he allows. A strong writer would address that.",
+      pieces:[
+        {id:"topic", group:1, role:"topic", text:"Harari makes a convincing case that humans, not a changing climate, were responsible for wiping out Australia's giant animals."},
+        {id:"p1", group:1, role:"phrase1", text:"Harari supports this claim by pointing out that", tier:"Great signal phrase", misplaced:MIS1},
+        {id:"e1", group:1, role:"evidence1", joinLower:true, text:"Most of Australia's largest animals, including giant kangaroos and a marsupial lion, disappeared soon after the first Sapiens arrived."},
+        {id:"p2", group:1, role:"phrase2", text:"Just as importantly, Harari rules out the weather by noting that", tier:"Great + transitional", misplaced:mis2("Just as importantly")},
+        {id:"e2", group:1, role:"evidence2", joinLower:true, text:"These giant animals had already lived through many earlier ice ages and warming periods without dying out."},
+        {id:"a", group:1, role:"analysis", text:"These two facts work together: the timing connects the extinctions to humans, while the animals' survival through earlier climate changes weakens the weather explanation. That doesn't prove humans did it, but it makes them the most likely cause."},
+        {id:"m", group:1, role:"merging", text:"Australia was only the beginning. Harari argues the same pattern repeated when Sapiens reached the Americas, which makes it much harder to dismiss the extinctions as a coincidence."},
+        {id:"d1", group:0, role:"phrase-decoy", text:"In the book it says that", tier:"Poor", why:"Poor: no author is named, and 'it says' is a vague, weak verb."},
+        {id:"d2", group:0, role:"phrase-decoy", text:"According to Harari,", tier:"Good, not great", why:"Good, but not great: it names the source, yet doesn't show how the evidence supports the claim."},
+        {id:"d3", group:0, role:"phrase-decoy", text:"Also, there is another thing:", tier:"Poor (transition word only)", why:"'Also' is a transition, but this phrase names no source and doesn't say how the two pieces of evidence connect."},
+        {id:"d4", group:0, role:"phrase-decoy", text:"However, Harari says that", tier:"Wrong-way transition", why:"'However' signals a contrast, but this evidence supports the point before it."}
+      ]
+    },
+    {
+      id:"tolkien",
+      tab:"Tolkien",
+      title:"Paragraph 1 — Tolkien is not the greatest",
+      intro:"Argue that J.R.R. Tolkien should not be called the greatest fantasy writer of all time.",
+      counter:"Tolkien's fans would respond that he invented the modern fantasy world, with detailed maps, histories, and languages, and that nearly every fantasy author since has built on his work. A strong writer would answer that.",
+      pieces:[
+        {id:"topic", group:1, role:"topic", text:"J.R.R. Tolkien may be the most famous fantasy writer ever, but fame is not the same as greatness, and he should not be called the greatest fantasy author of all time."},
+        {id:"p1", group:1, role:"phrase1", text:"Author Michael Moorcock challenges Tolkien's top spot by arguing that", tier:"Great signal phrase", misplaced:MIS1},
+        {id:"e1", group:1, role:"evidence1", text:"Middle-earth is a comforting, old-fashioned place that offers readers a safe adventure instead of a story that challenges them."},
+        {id:"p2", group:1, role:"phrase2", text:"Building on this, the Hugo Awards, which fans vote on, reveal that", tier:"Great + transitional", misplaced:mis2("Building on this")},
+        {id:"e2", group:1, role:"evidence2", text:"N. K. Jemisin became the first author to win Best Novel three years in a row, from 2016 to 2018, for her Broken Earth trilogy."},
+        {id:"a", group:1, role:"analysis", text:"Moorcock's complaint suggests Tolkien's cozy style has limits, and Jemisin's wins show that today's readers reward fantasy that takes bigger risks. If different writers can be great in very different ways, it is hard to crown one author above all the rest."},
+        {id:"m", group:1, role:"merging", text:"Tolkien deserves credit for opening the door to modern fantasy, but opening a door first is not the same as being the greatest writer to walk through it, which means the title is still up for debate."},
+        {id:"d1", group:0, role:"phrase-decoy", text:"Some people say that", tier:"Poor", why:"Poor: 'some people' is not a source. The reader can't tell who is speaking or why to trust them."},
+        {id:"d2", group:0, role:"phrase-decoy", text:"Moorcock writes that", tier:"Good, not great", why:"Good, but not great: it names the source, yet says nothing about what the evidence does for the argument."},
+        {id:"d3", group:0, role:"phrase-decoy", text:"Also, here is another point:", tier:"Poor (transition word only)", why:"'Also' is a transition, but this phrase names no source and doesn't explain how the two pieces of evidence connect."},
+        {id:"d4", group:0, role:"phrase-decoy", text:"In contrast, Moorcock writes that", tier:"Wrong-way transition", why:"'In contrast' signals a change of direction, but the second piece of evidence supports the first."}
+      ]
+    },
+    {
+      id:"ai",
+      tab:"AI in middle school",
+      title:"Paragraph 2 — No AI tools in middle school",
+      intro:"Argue that middle schoolers should have zero access to, or practice with, AI tools.",
+      counter:"Others argue that students will meet AI tools anyway, so schools should teach responsible use early, with guidance. A strong writer would answer that.",
+      pieces:[
+        {id:"topic", group:1, role:"topic", text:"Middle schoolers should have zero access to AI tools, because they are still building the thinking and writing skills that those tools can quietly do for them."},
+        {id:"p1", group:1, role:"phrase1", text:"To show what can go wrong, a 2025 MIT Media Lab study of essay writing revealed that", tier:"Great signal phrase", misplaced:MIS1},
+        {id:"e1", group:1, role:"evidence1", joinLower:true, text:"Adults who used ChatGPT to write essays showed weaker connections between brain regions than adults who wrote on their own, and many struggled to quote from the essays they had just finished."},
+        {id:"p2", group:1, role:"phrase2", text:"Reinforcing this warning, researchers at the University of Pennsylvania discovered that", tier:"Great + transitional", misplaced:mis2("Reinforcing this warning")},
+        {id:"e2", group:1, role:"evidence2", joinLower:true, text:"High school math students who practiced with a ChatGPT-style helper did better on practice problems but scored lower on a later test than classmates who never used it."},
+        {id:"a", group:1, role:"analysis", text:"Neither study looked at middle schoolers, but both point to the same risk: when a tool does the thinking, students can look successful while learning less. Because middle school is when these skills first take shape, the safest choice is to keep the shortcut out of reach."},
+        {id:"m", group:1, role:"merging", text:"Until students have built strong thinking and writing habits on their own, keeping AI tools out of middle school protects the very skills that school is meant to teach."},
+        {id:"d1", group:0, role:"phrase-decoy", text:"Studies say that", tier:"Poor", why:"Poor: 'studies' is too vague. Which studies, by whom? The reader can't judge the source."},
+        {id:"d2", group:0, role:"phrase-decoy", text:"A study from MIT found that", tier:"Good, not great", why:"Good, but not great: it names the source, yet doesn't show how the evidence supports the claim."},
+        {id:"d3", group:0, role:"phrase-decoy", text:"Plus, here is another thing:", tier:"Poor (transition word only)", why:"'Plus' is a transition, but this phrase names no source and doesn't explain how the two pieces of evidence connect."},
+        {id:"d4", group:0, role:"phrase-decoy", text:"On the other hand, researchers found that", tier:"Wrong-way transition", why:"'On the other hand' signals a contrast, but the second piece of evidence supports the first."}
+      ]
+    },
+    {
+      id:"sports",
+      tab:"School sports",
+      title:"Paragraph 3 — No sports teams in schools",
+      intro:"Argue that schools should not have sports teams attached to them, the way many other countries do it.",
+      counter:"Supporters say school teams build teamwork and school spirit, and give students who couldn't afford club fees a place to play. A strong writer would answer that.",
+      pieces:[
+        {id:"topic", group:1, role:"topic", text:"Schools should not run sports teams, because a school's main job is education, and sports can be run just as well by community clubs."},
+        {id:"p1", group:1, role:"phrase1", text:"Journalist Amanda Ripley builds this case in The Atlantic, observing that", tier:"Great signal phrase", misplaced:MIS1},
+        {id:"e1", group:1, role:"evidence1", joinLower:true, text:"In countries such as Finland and South Korea, which are known for strong student test scores, sports are mostly played through community clubs instead of school teams."},
+        {id:"p2", group:1, role:"phrase2", text:"Going a step further, Ripley warns that", tier:"Great + transitional", misplaced:mis2("Going a step further")},
+        {id:"e2", group:1, role:"evidence2", joinLower:true, text:"In many American schools, the sports program can take up so much money, time, and attention that academics end up in second place."},
+        {id:"a", group:1, role:"analysis", text:"This shows that sports can thrive without being run by schools. Test scores alone can't prove that clubs cause better learning, but they do show that a country can love sports and still keep teams out of the classroom's way."},
+        {id:"m", group:1, role:"merging", text:"Moving teams from schools to community clubs would let students keep the fun and fitness of sports while letting schools focus on what only they can provide: a great education."},
+        {id:"d1", group:0, role:"phrase-decoy", text:"People say that", tier:"Poor", why:"Poor: 'people' is not a source. The reader has no way to judge who is speaking."},
+        {id:"d2", group:0, role:"phrase-decoy", text:"Ripley writes that", tier:"Good, not great", why:"Good, but not great: it names the source, yet says nothing about what the evidence does for the argument."},
+        {id:"d3", group:0, role:"phrase-decoy", text:"Also, here's a second thing:", tier:"Poor (transition word only)", why:"'Also' is a transition, but this phrase names no source and doesn't explain how the two pieces of evidence connect."},
+        {id:"d4", group:0, role:"phrase-decoy", text:"In contrast, Ripley writes that", tier:"Wrong-way transition", why:"'In contrast' signals a change of direction, but the second piece of evidence supports the first."}
+      ]
+    }
+  ];
+
+  function buildBoard(def, panel){
+    var PIECES = def.pieces;
+    var slotState = {};
+    var slotEls = {};
+    var selectedId = null;
+
+    ROLES.forEach(function(r){ slotState[r] = {cardId:null, status:"empty"}; });
+
+    function find(id){ return PIECES.find(function(p){ return p.id === id; }); }
+    function isPlaced(id){
+      for(var r in slotState){ if(slotState[r].cardId === id) return true; }
+      return false;
+    }
+
+    // ---- static DOM for this panel ----
+    panel.appendChild(el("p", "section-intro", def.intro));
+
+    var progressRow = el("div", "progress-row");
+    var track = el("div", "progress-track");
+    var fill = el("div", "progress-fill");
+    track.appendChild(fill);
+    var label = el("div", "progress-label", "0 / " + ROLES.length + " correct");
+    var btnRow = el("div", "btn-row");
+    var resetBtn = el("button", "btn", "Reset");
+    var revealBtn = el("button", "btn primary", "Read it as one paragraph");
+    revealBtn.disabled = true;
+    btnRow.appendChild(resetBtn);
+    btnRow.appendChild(revealBtn);
+    progressRow.appendChild(track);
+    progressRow.appendChild(label);
+    progressRow.appendChild(btnRow);
+    panel.appendChild(progressRow);
+
+    var bankSection = el("section", "bank-section");
+    bankSection.appendChild(el("p", "bank-title", "Sentence & phrase bank (watch out: four phrase cards are decoys)"));
+    var bankEl = el("div", "bank");
+    bankSection.appendChild(bankEl);
+    panel.appendChild(bankSection);
+
+    var cols = el("div", "para-columns single-col");
+    var col = el("div", "para-col");
+    col.appendChild(el("h2", null, def.title));
+
+    function makeSlot(role){
+      var meta = META[role];
+      var slot = el("div", "slot");
+      slot.dataset.role = role;
+      slot.dataset.letter = meta.letter;
+      slot.appendChild(el("div", "letter-badge", meta.letter));
+      slot.appendChild(el("div", "slot-label", meta.label));
+      slot.appendChild(el("div", "slot-content", meta.ph));
+      slot.addEventListener("click", function(){
+        var st = slotState[role];
+        if(selectedId){ place(selectedId, role); return; }
+        if(st.status === "incorrect" || st.status === "filled") clearSlot(role);
+      });
+      slotEls[role] = slot;
+      return slot;
+    }
+
+    function evidenceGroup(titleText, r1, r2, trans){
+      var g = el("div", "evidence-group" + (trans ? " trans" : ""));
+      var t = el("div", "group-title");
+      t.appendChild(el("span", "letter-badge", "E"));
+      t.appendChild(document.createTextNode(titleText));
+      g.appendChild(t);
+      var s1 = makeSlot(r1);
+      s1.classList.add("pair-first");
+      g.appendChild(s1);
+      g.appendChild(makeSlot(r2));
+      return g;
+    }
+
+    col.appendChild(makeSlot("topic"));
+    col.appendChild(evidenceGroup("Evidence sentence 1: needs a great signal phrase", "phrase1", "evidence1", false));
+    col.appendChild(evidenceGroup("Evidence sentence 2: needs a great + transitional signal phrase", "phrase2", "evidence2", true));
+    col.appendChild(makeSlot("analysis"));
+    col.appendChild(makeSlot("merging"));
+
+    var checkRow = el("div", "check-row");
+    var checkBtn = el("button", "btn", "Check this paragraph");
+    checkBtn.disabled = true;
+    var statusEl = el("span", "check-status");
+    checkRow.appendChild(checkBtn);
+    checkRow.appendChild(statusEl);
+    col.appendChild(checkRow);
+    cols.appendChild(col);
+    panel.appendChild(cols);
+
+    var revealPanel = el("div", "reveal-panel");
+    revealPanel.appendChild(el("h2", null, "The finished paragraph"));
+    var revealText = el("p");
+    revealPanel.appendChild(revealText);
+    revealPanel.appendChild(el("p", "legend", "Highlighted in teal: the great signal phrase. Highlighted in purple: the great + transitional signal phrase."));
+    revealPanel.appendChild(el("h3", null, "Why the other phrase cards didn't make the cut"));
+    var decoyList = el("ul");
+    PIECES.filter(function(p){ return p.group === 0; }).forEach(function(p){
+      var li = el("li");
+      var strong = el("strong", null, "\u201C" + p.text + "\u201D");
+      li.appendChild(strong);
+      li.appendChild(document.createTextNode(" (" + p.tier + "): " + p.why));
+      decoyList.appendChild(li);
+    });
+    revealPanel.appendChild(decoyList);
+    revealPanel.appendChild(el("div", "counter-note", "Think about the other side. " + def.counter));
+    panel.appendChild(revealPanel);
+
+    // ---- behaviour ----
+    function toggleSelect(id){
+      selectedId = (selectedId === id) ? null : id;
+      var prev = bankEl.querySelector(".card.selected");
+      if(prev) prev.classList.remove("selected");
+      if(selectedId){
+        var c = bankEl.querySelector('.card[data-id="' + cssEscape(id) + '"]');
+        if(c) c.classList.add("selected");
+      }
+    }
+
+    function buildBank(){
+      bankEl.innerHTML = "";
+      var available = PIECES.filter(function(p){ return !isPlaced(p.id); });
+      shuffle(available).forEach(function(piece){
+        var card = el("div", "card", piece.text);
+        card.dataset.id = piece.id;
+        card.tabIndex = 0;
+        if(selectedId === piece.id) card.classList.add("selected");
+        attachDrag(card, {
+          dropSelector: ".slot",
+          canDrop: function(slot){ return slotState[slot.dataset.role].status !== "correct"; },
+          onDrop: function(slot){ place(piece.id, slot.dataset.role); },
+          onTap: function(){ toggleSelect(piece.id); }
+        });
+        bankEl.appendChild(card);
+      });
+    }
+
+    function incorrectMessage(piece){
+      if(piece.group === 0) return piece.why;
+      if(roleKind(piece.role) === "phrase") return piece.misplaced || "Right paragraph, but this phrase belongs in the other spot.";
+      return "Not the right fit for this spot. Re-read what this slot's job is.";
+    }
+
+    function renderSlot(role){
+      var slot = slotEls[role];
+      var st = slotState[role];
+      var meta = META[role];
+      var content = slot.querySelector(".slot-content");
+      slot.classList.remove("state-filled","state-correct","state-incorrect");
+      var oldTick = slot.querySelector(".tick");
+      if(oldTick) oldTick.remove();
+
+      if(st.status === "empty"){
+        content.textContent = meta.ph;
+        content.classList.remove("has-text");
+        return;
+      }
+      var piece = find(st.cardId);
+      content.textContent = piece ? piece.text : "";
+      content.classList.add("has-text");
+      if(st.status === "filled"){ slot.classList.add("state-filled"); return; }
+
+      var tick = el("div", "tick");
+      if(st.status === "correct"){
+        slot.classList.add("state-correct");
+        tick.textContent = "✓ " + (piece.tier ? piece.tier + ", locked in" : "locked in");
+      } else {
+        slot.classList.add("state-incorrect");
+        tick.textContent = "✕ " + incorrectMessage(piece) + " Tap to try a different card.";
+      }
+      slot.appendChild(tick);
+    }
+
+    function flashMismatch(role, cardId){
+      var slot = slotEls[role];
+      slot.classList.add("dragover");
+      setTimeout(function(){ slot.classList.remove("dragover"); }, 300);
+      var cardEl = bankEl.querySelector('.card[data-id="' + cssEscape(cardId) + '"]');
+      if(cardEl){
+        cardEl.classList.add("shake");
+        setTimeout(function(){ cardEl.classList.remove("shake"); }, 450);
+      }
+    }
+
+    function place(cardId, role){
+      var st = slotState[role];
+      if(!st || st.status === "correct") return;
+      var piece = find(cardId);
+      if(roleKind(role) !== roleKind(piece.role)){ flashMismatch(role, cardId); return; }
+      st.cardId = cardId;
+      st.status = "filled";
+      selectedId = null;
+      renderSlot(role);
+      buildBank();
+      updateCheck();
+      updateProgress();
+    }
+
+    function clearSlot(role){
+      var st = slotState[role];
+      if(st.status === "correct") return;
+      st.cardId = null;
+      st.status = "empty";
+      renderSlot(role);
+      buildBank();
+      updateCheck();
+      updateProgress();
+    }
+
+    function updateCheck(){
+      var allFilled = ROLES.every(function(r){ return slotState[r].status !== "empty"; });
+      checkBtn.disabled = !allFilled;
+      statusEl.textContent = allFilled ? "Ready to check." : "";
+    }
+
+    function updateProgress(){
+      var count = 0;
+      ROLES.forEach(function(r){ if(slotState[r].status === "correct") count++; });
+      fill.style.width = (count / ROLES.length * 100) + "%";
+      label.textContent = count + " / " + ROLES.length + " correct";
+      revealBtn.disabled = count < ROLES.length;
+    }
+
+    function check(){
+      var correct = 0;
+      ROLES.forEach(function(role){
+        var st = slotState[role];
+        if(st.status === "correct"){ correct++; return; }
+        var piece = find(st.cardId);
+        var ok = piece && piece.group === 1 && piece.role === role;
+        st.status = ok ? "correct" : "incorrect";
+        if(ok) correct++;
+        renderSlot(role);
+      });
+      statusEl.textContent = correct + " of " + ROLES.length + " correct" +
+        (correct < ROLES.length ? ". Tap a red slot to read why and try a different card." : ". Nice work!");
+      updateCheck();
+      updateProgress();
+    }
+
+    function renderReveal(){
+      revealText.innerHTML = "";
+      ROLES.forEach(function(role, i){
+        var p = PIECES.find(function(x){ return x.group === 1 && x.role === role; });
+        var t = p.joinLower ? lowerFirst(p.text) : p.text;
+        if(roleKind(role) === "phrase"){
+          revealText.appendChild(el("span", "sp " + (role === "phrase2" ? "sp2" : "sp1"), t));
+        } else {
+          revealText.appendChild(document.createTextNode(t));
+        }
+        if(i < ROLES.length - 1) revealText.appendChild(document.createTextNode(" "));
+      });
+    }
+
+    function reset(){
+      ROLES.forEach(function(r){
+        slotState[r] = {cardId:null, status:"empty"};
+        renderSlot(r);
+      });
+      selectedId = null;
+      statusEl.textContent = "";
+      revealPanel.classList.remove("show");
+      buildBank();
+      updateCheck();
+      updateProgress();
+    }
+
+    checkBtn.addEventListener("click", check);
+    resetBtn.addEventListener("click", reset);
+    revealBtn.addEventListener("click", function(){
+      renderReveal();
+      revealPanel.classList.add("show");
+      revealPanel.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+
+    buildBank();
+    updateCheck();
+    updateProgress();
+  }
+
+  function buildAllBoards(){
+    var tabsEl = document.getElementById("tabs");
+    var panelsEl = document.getElementById("panels");
+    var tabBtns = [], panels = [];
+
+    BOARDS.forEach(function(def, idx){
+      var btn = el("button", "tab" + (idx === 0 ? " active" : ""), def.tab);
+      btn.type = "button";
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-selected", idx === 0 ? "true" : "false");
+      var panel = el("div", "board-panel" + (idx === 0 ? " active" : ""));
+      panel.setAttribute("role", "tabpanel");
+      buildBoard(def, panel);
+      btn.addEventListener("click", function(){
+        tabBtns.forEach(function(b, i){
+          var on = (i === idx);
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-selected", on ? "true" : "false");
+          panels[i].classList.toggle("active", on);
+        });
+      });
+      tabBtns.push(btn);
+      panels.push(panel);
+      tabsEl.appendChild(btn);
+      panelsEl.appendChild(panel);
+    });
+  }
+
+  buildSorter();
+  buildTransQuiz();
+  buildAllBoards();
+
+})();
+</script>
+</body>
+</html>

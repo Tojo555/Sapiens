@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sapiens Interactives</title>
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --paper: #eef1ea;
+    --panel: #f8faf5;
+    --ink: #1d2b26;
+    --ink-soft: #55655e;
+    --rule: #c6d1c3;
+    --teal: #1f6a66;
+    --ochre: #a9781c;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #151c19; --panel: #1c2521; --ink: #e5ece6; --ink-soft: #a3b2aa;
+      --rule: #34423c; --teal: #6cc2bb; --ochre: #e0b257; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #151c19; --panel: #1c2521; --ink: #e5ece6; --ink-soft: #a3b2aa;
+    --rule: #34423c; --teal: #6cc2bb; --ochre: #e0b257; color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    font-size: 17px; line-height: 1.55;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 16px 20px 56px; }
+  .stamp { text-align: right; margin: 0; font-size: 12.5px; font-style: italic; color: var(--ink-soft); }
+  .serif { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; }
+
+  header { padding: 40px 0 28px; border-bottom: 2px solid var(--ink); }
+  h1 { font-size: clamp(40px, 9vw, 64px); line-height: 1; margin: 0 0 14px; font-weight: 600; letter-spacing: -0.01em; }
+  .intro { margin: 0; max-width: 34em; color: var(--ink-soft); font-size: 18px; }
+
+  h2 { font-size: 26px; margin: 44px 0 4px; font-weight: 600; }
+  .section-note { margin: 0 0 18px; color: var(--ink-soft); font-size: 15.5px; }
+
+  /* Chapter rail: the quests follow the book in order */
+  .rail { list-style: none; margin: 0; padding: 0; position: relative; }
+  .rail::before {
+    content: ""; position: absolute; left: 44px; top: 10px; bottom: 10px;
+    width: 2px; background: var(--rule);
+  }
+  .stop { display: grid; grid-template-columns: 90px 1fr; gap: 18px; align-items: start; padding: 14px 0; position: relative; }
+  .num {
+    font-size: 54px; line-height: 1; text-align: center; color: var(--ochre);
+    background: var(--paper); padding: 4px 0; position: relative; font-variant-numeric: lining-nums;
+  }
+  .num small { display: block; font-size: 13px; color: var(--ink-soft); font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; margin-top: 4px; }
+
+  a.item { display: block; color: inherit; text-decoration: none; border-radius: 6px; padding: 6px 10px; margin: -6px -10px; }
+  a.item:hover .title, a.item:focus-visible .title { text-decoration: underline; text-underline-offset: 3px; }
+  a.item:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+  .title { font-size: 22px; font-weight: 600; color: var(--teal); margin: 0; line-height: 1.25; }
+  .chap { font-size: 14.5px; color: var(--ink-soft); margin: 2px 0 6px; font-style: italic; }
+  .desc { margin: 0; max-width: 36em; }
+
+  .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0; border-top: 1px solid var(--rule); }
+  .tools li { list-style: none; padding: 18px 16px 18px 0; border-bottom: 1px solid var(--rule); }
+  .tools { padding: 0; margin: 0; }
+  .tools .title { font-size: 19px; }
+
+  footer { margin-top: 48px; font-size: 14px; color: var(--ink-soft); }
+
+  @media (max-width: 520px) {
+    .rail::before { left: 30px; }
+    .stop { grid-template-columns: 62px 1fr; gap: 12px; }
+    .num { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="stamp">Prepared with AI support, reviewed by Mr. Johnson</p>
+
+  <header>
+    <h1 class="serif">Sapiens Interactives</h1>
+    <p class="intro">Games and practice pages for our reading of Yuval Noah Harari’s <em>Sapiens</em>. Pick the one for this week’s session, or go back and replay an earlier one.</p>
+  </header>
+
+  <h2 class="serif">Chapter quests</h2>
+  <p class="section-note">Reading games, in the order of the book. Play them with Mr. Johnson during the session.</p>
+  <ol class="rail">
+    <li class="stop">
+      <div class="num serif" aria-hidden="true">5<small>chapter</small></div>
+      <a class="item" href="ch05-great-wheat-heist.html">
+        <p class="title">The Great Wheat Heist</p>
+        <p class="chap">Chapter 5, “History’s Biggest Fraud”</p>
+        <p class="desc">Solve the case: who got scammed by the Agricultural Revolution, and does Harari prove it?</p>
+      </a>
+    </li>
+    <li class="stop">
+      <div class="num serif" aria-hidden="true">6<small>chapter</small></div>
+      <a class="item" href="ch06-pyramid-quest.html">
+        <p class="title">The Pyramid Quest</p>
+        <p class="chap">Chapter 6, “Building Pyramids”</p>
+        <p class="desc">Imagined orders, the walls that keep them standing, and three kinds of real.</p>
+      </a>
+    </li>
+    <li class="stop">
+      <div class="num serif" aria-hidden="true">10<small>chapter</small></div>
+      <a class="item" href="ch10-marketplace-of-trust.html">
+        <p class="title">The Marketplace of Trust</p>
+        <p class="chap">Chapter 10, “The Scent of Money”</p>
+        <p class="desc">Why money works at all, then a paragraph lab on transitions, setting up evidence and strong analysis.</p>
+      </a>
+    </li>
+  </ol>
+
+  <h2 class="serif">Writing practice</h2>
+  <p class="section-note">Tools for building TEAM paragraphs: Topic sentence, Evidence, Analysis, Merging sentence.</p>
+  <ul class="tools">
+    <li>
+      <a class="item" href="team-paragraph-builder.html">
+        <p class="title">Build the T.E.A.M. Paragraph</p>
+        <p class="desc">Drag sentences into place, starting with a warm-up and then three paragraphs from <em>Sapiens</em>.</p>
+      </a>
+    </li>
+    <li>
+      <a class="item" href="signal-phrase-studio.html">
+        <p class="title">Signal Phrase Studio</p>
+        <p class="desc">Learn what makes a signal phrase poor, good or great, then use them to build paragraphs.</p>
+      </a>
+    </li>
+    <li>
+      <a class="item" href="team-practice-analyze-rewrite.html">
+        <p class="title">TEAM Practice: Analyze and Rewrite</p>
+        <p class="desc">Find each sentence’s job, spot what isn’t working, then rewrite two paragraphs.</p>
+      </a>
+    </li>
+  </ul>
+
+  <footer>Your answers stay in your own browser. Nothing you type is sent anywhere.</footer>
+</div>
+</body>
+</html>

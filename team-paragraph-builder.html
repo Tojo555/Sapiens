@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build the T.E.A.M. Paragraph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+  :root{
+    --bg:#EDE6D6;
+    --bg-card:#FBF8F0;
+    --bg-bank:#E3DAC2;
+    --ink:#2B2420;
+    --ink-soft:#6b6052;
+    --line:#D8CBAE;
+    --topic:#B9842C;      --topic-tint:#F6E9CB;
+    --phrase:#7A5C9E;     --phrase-tint:#EFE7F7;
+    --evidence:#3F6E74;   --evidence-tint:#DEEDED;
+    --analysis:#A23E27;   --analysis-tint:#F6E1DA;
+    --merging:#5C7A52;    --merging-tint:#E6EEE0;
+    --correct:#3F7A4E;    --correct-soft:#DEEBDD;
+    --incorrect:#B23B2A;  --incorrect-soft:#F3DAD4;
+    --neutral-soft:#EFE7D6;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1C1812; --bg-card:#262019; --bg-bank:#231E16; --ink:#EDE6D6; --ink-soft:#BDB29B; --line:#3A3327;
+      --topic:#D9A440; --topic-tint:#332812;
+      --phrase:#B79BDB; --phrase-tint:#2A2333;
+      --evidence:#6FA8AE; --evidence-tint:#1C2A2A;
+      --analysis:#D9654A; --analysis-tint:#301F19;
+      --merging:#88AC78; --merging-tint:#202A1C;
+      --correct:#6FAE7C; --correct-soft:#1E2E20;
+      --incorrect:#E08370; --incorrect-soft:#3A2019;
+      --neutral-soft:#2A2419;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1C1812; --bg-card:#262019; --bg-bank:#231E16; --ink:#EDE6D6; --ink-soft:#BDB29B; --line:#3A3327;
+    --topic:#D9A440; --topic-tint:#332812;
+    --phrase:#B79BDB; --phrase-tint:#2A2333;
+    --evidence:#6FA8AE; --evidence-tint:#1C2A2A;
+    --analysis:#D9654A; --analysis-tint:#301F19;
+    --merging:#88AC78; --merging-tint:#202A1C;
+    --correct:#6FAE7C; --correct-soft:#1E2E20;
+    --incorrect:#E08370; --incorrect-soft:#3A2019;
+    --neutral-soft:#2A2419;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    background:var(--bg); color:var(--ink); font-family:"Lora",Georgia,serif; line-height:1.5;
+    -webkit-font-smoothing:antialiased; overscroll-behavior:none;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px;}
+  header.top{margin-bottom:18px;}
+  h1{
+    font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:clamp(28px,4vw,40px);
+    margin:0 0 6px; letter-spacing:-0.01em;
+  }
+  .sub{color:var(--ink-soft);font-size:16px;max-width:66ch;margin:0;}
+
+  .team-banner{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0;}
+  .team-letter{
+    flex:1 1 150px; display:flex; align-items:center; gap:10px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+  }
+  .team-letter .big{font-family:"Fraunces",Georgia,serif; font-weight:700; font-size:26px; width:34px; text-align:center; flex:none;}
+  .team-letter .small{font-size:13px; color:var(--ink-soft); line-height:1.3;}
+  .team-letter.t .big{color:var(--topic);}
+  .team-letter.e .big{color:var(--evidence);}
+  .team-letter.a .big{color:var(--analysis);}
+  .team-letter.m .big{color:var(--merging);}
+
+  .section-divider{
+    display:flex; align-items:center; gap:14px; margin:42px 0 20px;
+  }
+  .section-divider .line{flex:1; height:1px; background:var(--line);}
+  .section-divider .label{
+    font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:15px; color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .section-intro{color:var(--ink-soft); font-size:15px; margin:0 0 16px; max-width:70ch;}
+
+  .progress-row{display:flex;align-items:center;gap:14px;margin:18px 0 10px;flex-wrap:wrap;}
+  .progress-track{flex:1 1 220px;height:10px;background:var(--bg-bank);border-radius:6px;overflow:hidden;border:1px solid var(--line);}
+  .progress-fill{height:100%;width:0%;background:var(--correct);transition:width .35s ease;}
+  .progress-label{font-family:"Fraunces",Georgia,serif;font-size:14px;color:var(--ink-soft);white-space:nowrap;}
+  .btn{
+    font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:14px;
+    border:1px solid var(--ink);background:transparent;color:var(--ink);
+    padding:9px 16px;border-radius:7px;cursor:pointer;
+    transition:background .15s ease, color .15s ease, opacity .15s ease;
+  }
+  .btn:hover{background:var(--ink);color:var(--bg-card);}
+  .btn.primary{background:var(--ink);color:var(--bg-card);}
+  .btn.primary:hover{opacity:.85;}
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  .btn:disabled:hover{background:transparent;color:var(--ink);}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+  .bank-section{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);
+    padding:12px 0 16px;border-bottom:1px solid var(--line);margin-bottom:26px;
+  }
+  .bank-title{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:15px;color:var(--ink-soft);margin:0 0 10px;}
+  .bank{
+    background:var(--bg-bank);border:1px dashed var(--line);border-radius:10px;padding:14px;
+    display:flex;flex-wrap:wrap;gap:10px;min-height:58px;
+    max-height:190px;overflow-y:auto;
+  }
+  .bank:empty::after{
+    content:"All sentences placed — hit each paragraph's Check button to see how it went.";
+    color:var(--ink-soft);font-style:italic;font-size:14px;padding:8px;
+  }
+
+  .card{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:9px;
+    padding:10px 13px 10px 30px;font-size:14.5px;line-height:1.4;max-width:300px;
+    cursor:grab;box-shadow:0 1px 0 rgba(0,0,0,.04);user-select:none;position:relative;
+    touch-action:none;
+    transition:box-shadow .12s ease, border-color .12s ease, opacity .12s ease;
+  }
+  .card::before{
+    content:"⠿"; position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    color:var(--ink-soft); font-size:15px; letter-spacing:-2px;
+  }
+  .card:hover{box-shadow:0 3px 10px rgba(0,0,0,.09);}
+  .card.selected{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink);}
+  .card.shake{animation:shake .4s ease;border-color:var(--incorrect);}
+  .card.ghost{
+    position:fixed; pointer-events:none; z-index:1000; opacity:.95;
+    box-shadow:0 12px 28px rgba(0,0,0,.22); transform:rotate(-1deg) scale(1.03);
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);} 20%{transform:translateX(-5px);} 40%{transform:translateX(5px);}
+    60%{transform:translateX(-4px);} 80%{transform:translateX(4px);}
+  }
+
+  .essay-area{display:flex;flex-direction:column;gap:22px;}
+  .fixed-para{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:10px;padding:16px 20px;font-size:16px;
+  }
+  .fixed-para .tag{display:block;font-family:"Fraunces",Georgia,serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;}
+
+  .para-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:18px;}
+  .para-columns.single-col{grid-template-columns:minmax(0,640px);justify-content:center;}
+  .para-col{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:16px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .para-col h2{
+    font-family:"Fraunces",Georgia,serif;font-size:16px;font-weight:600;margin:0;color:var(--ink);
+    display:flex; align-items:center; gap:8px;
+  }
+  .para-col h2 .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%; background:var(--ink); color:var(--bg-card);
+    font-size:13px;
+  }
+  .para-hint{font-size:13px;color:var(--ink-soft);font-style:italic;margin:-6px 0 2px;display:none;}
+  .para-hint.show{display:block;}
+
+  .slot{
+    border:2px dashed var(--line);border-radius:8px;min-height:60px;padding:10px 12px 10px 40px;font-size:14px;
+    display:flex;flex-direction:column;justify-content:center;gap:4px;position:relative;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .slot .letter-badge{
+    position:absolute; left:10px; top:10px;
+    width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Fraunces",Georgia,serif; font-weight:700; font-size:12.5px; color:#fff;
+  }
+  .slot[data-letter="T"]{background:var(--topic-tint);} .slot[data-letter="T"] .letter-badge{background:var(--topic);}
+  .slot[data-letter="E"]{background:transparent;} .slot[data-letter="E"] .letter-badge{background:var(--evidence);}
+  .slot[data-letter="A"]{background:var(--analysis-tint);} .slot[data-letter="A"] .letter-badge{background:var(--analysis);}
+  .slot[data-letter="M"]{background:var(--merging-tint);} .slot[data-letter="M"] .letter-badge{background:var(--merging);}
+
+  .slot .slot-label{font-family:"Fraunces",Georgia,serif;font-size:12px;color:var(--ink-soft);}
+  .slot .slot-content{font-style:italic;color:var(--ink-soft);}
+  .slot .slot-content.has-text{font-style:normal;color:var(--ink);}
+  .slot.dragover{outline:3px solid var(--ink); outline-offset:-3px;}
+
+  .slot.state-filled{border-style:solid;border-color:var(--ink-soft);background:var(--neutral-soft) !important;}
+  .slot.state-correct{border-style:solid;border-color:var(--correct);background:var(--correct-soft) !important;cursor:default;}
+  .slot.state-correct .slot-label{color:var(--correct);font-weight:600;}
+  .slot.state-correct .tick{color:var(--correct);font-size:11px;font-style:italic;}
+  .slot.state-incorrect{border-style:solid;border-color:var(--incorrect);background:var(--incorrect-soft) !important;cursor:pointer;}
+  .slot.state-incorrect .slot-label{color:var(--incorrect);font-weight:600;}
+  .slot.state-incorrect .tick{color:var(--incorrect);font-size:11px;font-style:italic;}
+
+  .evidence-group{border:2px dashed var(--evidence);border-radius:8px;overflow:hidden;background:var(--evidence-tint);}
+  .evidence-group .group-title{
+    font-family:"Fraunces",Georgia,serif;font-size:12px;color:var(--evidence);padding:8px 12px 0;
+    display:flex; align-items:center; gap:6px;
+  }
+  .evidence-group .group-title .letter-badge{position:static; width:20px; height:20px; font-size:11px; background:var(--evidence);}
+  .evidence-group .slot{border:none;border-radius:0;min-height:48px;}
+  .evidence-group .slot.pair-first{border-bottom:1px dashed var(--line);}
+
+  .check-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .check-status{font-size:13px;color:var(--ink-soft);font-style:italic;}
+
+  .reveal-panel{margin-top:30px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;display:none;}
+  .reveal-panel.show{display:block;}
+  .reveal-panel h2{font-family:"Fraunces",Georgia,serif;margin-top:0;}
+  .reveal-panel p{font-size:16px;}
+
+  .credit-top{text-align:right;margin:0 0 6px;font-size:12.5px;color:var(--ink-soft);font-style:italic;}
+  footer.credit{margin-top:40px;text-align:center;font-size:12.5px;color:var(--ink-soft);font-style:italic;}
+
+  @media (max-width:640px){.bank-section{position:static;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="credit-top">Prepared with AI support, reviewed by Mr. Johnson</p>
+
+  <header class="top">
+    <h1>Build the T.E.A.M. Paragraph</h1>
+    <p class="sub">Start with a quick, low-stakes warm-up, then try the real thing with three paragraphs from Sapiens. Drag a sentence into a slot (mouse or finger both work), or tap a card then tap a slot. Nothing is scored until a whole paragraph is full.</p>
+  </header>
+
+  <div class="team-banner">
+    <div class="team-letter t"><div class="big">T</div><div class="small">Topic sentence — the paragraph's main point.</div></div>
+    <div class="team-letter e"><div class="big">E</div><div class="small">Evidence — a signal phrase plus the specific facts that back it up.</div></div>
+    <div class="team-letter a"><div class="big">A</div><div class="small">Analysis — why or how the evidence proves the point.</div></div>
+    <div class="team-letter m"><div class="big">M</div><div class="small">Merging — sums up the idea and glides into what's next.</div></div>
+  </div>
+
+  <!-- ============ WARM-UP ============ -->
+  <div class="section-divider"><span class="label">Warm-Up</span><span class="line"></span></div>
+  <p class="section-intro">One paragraph, no pressure — arguing that Minecraft is the greatest video game of all time.</p>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="wProgressFill"></div></div>
+    <div class="progress-label" id="wProgressLabel">0 / 5 correct</div>
+    <div class="btn-row">
+      <button class="btn" id="wResetBtn">Reset</button>
+      <button class="btn primary" id="wRevealBtn" disabled>Read it as one paragraph</button>
+    </div>
+  </div>
+
+  <section class="bank-section">
+    <p class="bank-title">Sentence &amp; phrase bank</p>
+    <div class="bank" id="wBank"></div>
+  </section>
+
+  <div class="essay-area">
+    <div class="para-columns single-col" id="wColumns"></div>
+  </div>
+
+  <div class="reveal-panel" id="wRevealPanel">
+    <h2>The warm-up paragraph</h2>
+    <p id="wRevealText"></p>
+  </div>
+
+  <!-- ============ MAIN EXERCISE ============ -->
+  <div class="section-divider"><span class="label">Main Practice — Sapiens, Chapters 1–4</span><span class="line"></span></div>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 15 correct</div>
+    <div class="btn-row">
+      <button class="btn" id="hintBtn">Show paragraph hints</button>
+      <button class="btn" id="resetBtn">Reset</button>
+      <button class="btn primary" id="revealBtn" disabled>Read the finished essay</button>
+    </div>
+  </div>
+
+  <section class="bank-section">
+    <p class="bank-title">Sentence &amp; phrase bank</p>
+    <div class="bank" id="bank"></div>
+  </section>
+
+  <div class="essay-area">
+
+    <div class="fixed-para">
+      <span class="tag">Introduction (given)</span>
+      Out of all the animals that have ever lived on Earth, Homo sapiens is the only one that went on to build cities, write books, and send rockets into space. Early humans were not the strongest or the fastest creatures in their environment, so how did they end up taking over the planet? Harari argues that three changes — mastering fire, inventing shared stories, and developing flexible skills for daily survival — gave Sapiens an edge no other species had.
+    </div>
+
+    <div class="para-columns" id="paraColumns"></div>
+
+    <div class="fixed-para">
+      <span class="tag">Conclusion (given)</span>
+      Taken together, these three changes show that Sapiens' rise to power was never really about brute strength. It was about adaptability — the ability to harness new tools, invent powerful shared ideas, and get the most out of whatever environment they found themselves in.
+    </div>
+
+  </div>
+
+  <div class="reveal-panel" id="revealPanel">
+    <h2>The finished essay</h2>
+    <p>Out of all the animals that have ever lived on Earth, Homo sapiens is the only one that went on to build cities, write books, and send rockets into space. Early humans were not the strongest or the fastest creatures in their environment, so how did they end up taking over the planet? Harari argues that three changes — mastering fire, inventing shared stories, and developing flexible skills for daily survival — gave Sapiens an edge no other species had.</p>
+    <p id="revealP1"></p>
+    <p id="revealP2"></p>
+    <p id="revealP3"></p>
+    <p>Taken together, these three changes show that Sapiens' rise to power was never really about brute strength. It was about adaptability — the ability to harness new tools, invent powerful shared ideas, and get the most out of whatever environment they found themselves in.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  var DRAG_THRESHOLD = 6;
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  function cssEscape(s){ return s.replace(/[^a-zA-Z0-9_-]/g, "\\$&"); }
+  function roleKind(role){ return role.indexOf("phrase") === 0 ? "phrase" : "sentence"; }
+
+  // ---- generic reusable board engine ----
+  // cfg = { pieces, groups:[{id,title,layout,hint?}], roleMeta:{role:{letter,label,placeholder}},
+  //         bankEl, columnsEl, progressFillEl, progressLabelEl, revealBtnEl, resetBtnEl, hintBtnEl?,
+  //         revealTargets?: [el,...] (one per group, in group order) }
+  function createBoard(cfg){
+    var PIECES = cfg.pieces;
+    var GROUPS = cfg.groups;
+    var ROLE_META = cfg.roleMeta;
+    var totalPieces = PIECES.length;
+
+    var slotState = {};
+    var groupRoles = {}; // groupId -> flat array of roles in that group
+
+    GROUPS.forEach(function(g){
+      groupRoles[g.id] = [];
+      g.layout.forEach(function(block){
+        var roles = block.type === "single" ? [block.role] : block.roles;
+        roles.forEach(function(r){
+          slotState[g.id+"-"+r] = {cardId:null, status:"empty"};
+          groupRoles[g.id].push(r);
+        });
+      });
+    });
+
+    var selectedCardId = null;
+    var slotEls = {}, checkBtnEls = {}, statusEls = {};
+
+    function findPiece(id){ return PIECES.find(function(p){ return p.id === id; }); }
+    function findPieceByGroupRole(g, role){ return PIECES.find(function(p){ return p.group===g && p.role===role; }); }
+    function isCardPlaced(id){ for(var k in slotState){ if(slotState[k].cardId === id) return true; } return false; }
+
+    function makeSlot(groupId, role){
+      var meta = ROLE_META[role];
+      var slot = document.createElement("div");
+      slot.className = "slot";
+      slot.dataset.group = groupId;
+      slot.dataset.role = role;
+      slot.dataset.letter = meta.letter;
+
+      var badge = document.createElement("div");
+      badge.className = "letter-badge";
+      badge.textContent = meta.letter;
+      slot.appendChild(badge);
+
+      var label = document.createElement("div");
+      label.className = "slot-label";
+      label.textContent = meta.label;
+      slot.appendChild(label);
+
+      var content = document.createElement("div");
+      content.className = "slot-content";
+      content.textContent = meta.placeholder;
+      slot.appendChild(content);
+
+      slot.addEventListener("click", function(){
+        var st = slotState[groupId+"-"+role];
+        if(selectedCardId){ place(selectedCardId, groupId, role); return; }
+        if(st.status === "incorrect" || st.status === "filled") clearSlot(groupId, role);
+      });
+
+      slotEls[groupId+"-"+role] = slot;
+      return slot;
+    }
+
+    function buildColumns(){
+      cfg.columnsEl.innerHTML = "";
+      slotEls = {}; checkBtnEls = {}; statusEls = {};
+
+      GROUPS.forEach(function(g){
+        var col = document.createElement("div");
+        col.className = "para-col";
+
+        var h2 = document.createElement("h2");
+        if(g.showNum){
+          var numSpan = document.createElement("span");
+          numSpan.className = "num";
+          numSpan.textContent = g.id;
+          h2.appendChild(numSpan);
+        }
+        h2.appendChild(document.createTextNode(g.title));
+        col.appendChild(h2);
+
+        if(g.hint){
+          var hint = document.createElement("p");
+          hint.className = "para-hint";
+          hint.dataset.group = g.id;
+          hint.textContent = g.hint;
+          col.appendChild(hint);
+        }
+
+        g.layout.forEach(function(block){
+          if(block.type === "single"){
+            col.appendChild(makeSlot(g.id, block.role));
+          } else {
+            var group = document.createElement("div");
+            group.className = "evidence-group";
+            var groupTitle = document.createElement("div");
+            groupTitle.className = "group-title";
+            var groupBadge = document.createElement("span");
+            groupBadge.className = "letter-badge";
+            groupBadge.textContent = "E";
+            groupTitle.appendChild(groupBadge);
+            groupTitle.appendChild(document.createTextNode(block.groupLabel || "Evidence sentence"));
+            group.appendChild(groupTitle);
+            var firstSlot = makeSlot(g.id, block.roles[0]);
+            firstSlot.classList.add("pair-first");
+            group.appendChild(firstSlot);
+            group.appendChild(makeSlot(g.id, block.roles[1]));
+            col.appendChild(group);
+          }
+        });
+
+        var checkRow = document.createElement("div");
+        checkRow.className = "check-row";
+        var checkBtn = document.createElement("button");
+        checkBtn.className = "btn";
+        checkBtn.textContent = "Check " + (g.shortLabel || g.title);
+        checkBtn.disabled = true;
+        checkBtn.addEventListener("click", function(){ checkGroup(g.id); });
+        checkRow.appendChild(checkBtn);
+        checkBtnEls[g.id] = checkBtn;
+
+        var statusEl = document.createElement("span");
+        statusEl.className = "check-status";
+        checkRow.appendChild(statusEl);
+        statusEls[g.id] = statusEl;
+
+        col.appendChild(checkRow);
+        cfg.columnsEl.appendChild(col);
+      });
+    }
+
+    function attachCardInteraction(card, pieceId){
+      card.addEventListener("pointerdown", function(e){
+        if(e.button !== undefined && e.button !== 0) return;
+        var startX = e.clientX, startY = e.clientY;
+        var dragging = false;
+        var ghost = null;
+        var currentSlotEl = null;
+
+        function findSlotUnder(x, y){
+          if(ghost) ghost.style.display = "none";
+          var el = document.elementFromPoint(x, y);
+          if(ghost) ghost.style.display = "";
+          return el ? el.closest(".slot") : null;
+        }
+
+        function onMove(ev){
+          var dx = ev.clientX - startX, dy = ev.clientY - startY;
+          if(!dragging){
+            if(Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+            dragging = true;
+            var rect = card.getBoundingClientRect();
+            ghost = card.cloneNode(true);
+            ghost.classList.add("ghost");
+            ghost.style.left = rect.left + "px";
+            ghost.style.top = rect.top + "px";
+            ghost.style.width = rect.width + "px";
+            document.body.appendChild(ghost);
+            card.style.opacity = "0.3";
+          }
+          var rect2 = ghost.getBoundingClientRect();
+          ghost.style.left = (ev.clientX - rect2.width/2) + "px";
+          ghost.style.top = (ev.clientY - rect2.height/2) + "px";
+
+          var slot = findSlotUnder(ev.clientX, ev.clientY);
+          if(slot !== currentSlotEl){
+            if(currentSlotEl) currentSlotEl.classList.remove("dragover");
+            currentSlotEl = slot;
+            if(currentSlotEl){
+              var st = slotState[currentSlotEl.dataset.group + "-" + currentSlotEl.dataset.role];
+              if(st.status !== "correct") currentSlotEl.classList.add("dragover");
+            }
+          }
+        }
+
+        function onUp(ev){
+          document.removeEventListener("pointermove", onMove);
+          document.removeEventListener("pointerup", onUp);
+          document.removeEventListener("pointercancel", onUp);
+
+          if(dragging){
+            if(ghost) ghost.remove();
+            card.style.opacity = "";
+            if(currentSlotEl){
+              currentSlotEl.classList.remove("dragover");
+              place(pieceId, parseInt(currentSlotEl.dataset.group, 10), currentSlotEl.dataset.role);
+            }
+          } else {
+            toggleSelect(pieceId, card);
+          }
+        }
+
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
+        document.addEventListener("pointercancel", onUp);
+      });
+
+      card.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleSelect(pieceId, card); }
+      });
+    }
+
+    function toggleSelect(pieceId, card){
+      if(selectedCardId === pieceId){
+        selectedCardId = null;
+        card.classList.remove("selected");
+      } else {
+        var prev = cfg.bankEl.querySelector(".card.selected");
+        if(prev) prev.classList.remove("selected");
+        selectedCardId = pieceId;
+        card.classList.add("selected");
+      }
+    }
+
+    function buildBank(){
+      cfg.bankEl.innerHTML = "";
+      var available = PIECES.filter(function(p){ return !isCardPlaced(p.id); });
+      var order = shuffle(available);
+      order.forEach(function(piece){
+        var card = document.createElement("div");
+        card.className = "card";
+        card.dataset.id = piece.id;
+        card.textContent = piece.text;
+        card.tabIndex = 0;
+        attachCardInteraction(card, piece.id);
+        cfg.bankEl.appendChild(card);
+      });
+    }
+
+    function renderSlotContent(key){
+      var slot = slotEls[key];
+      var st = slotState[key];
+      var role = slot.dataset.role;
+      var meta = ROLE_META[role];
+      var content = slot.querySelector(".slot-content");
+      slot.classList.remove("state-filled","state-correct","state-incorrect");
+      var oldTick = slot.querySelector(".tick");
+      if(oldTick) oldTick.remove();
+
+      if(st.status === "empty"){
+        content.textContent = meta.placeholder;
+        content.classList.remove("has-text");
+        return;
+      }
+      var piece = findPiece(st.cardId);
+      content.textContent = piece ? piece.text : "";
+      content.classList.add("has-text");
+      if(st.status === "filled") slot.classList.add("state-filled");
+      if(st.status === "correct" || st.status === "incorrect"){
+        slot.classList.add(st.status === "correct" ? "state-correct" : "state-incorrect");
+        var tick = document.createElement("div");
+        tick.className = "tick";
+        tick.textContent = st.status === "correct" ? "✓ locked in" : "✕ tap to try a different card";
+        slot.appendChild(tick);
+      }
+    }
+
+    function place(cardId, groupId, role){
+      var key = groupId + "-" + role;
+      var st = slotState[key];
+      if(!st || st.status === "correct") return;
+
+      var piece = findPiece(cardId);
+      var slotKind = roleKind(role);
+      var cardKind = roleKind(piece.role);
+      if(slotKind !== cardKind){
+        flashMismatch(key, cardId);
+        return;
+      }
+
+      if(st.cardId && st.cardId !== cardId){
+        st.cardId = null;
+        st.status = "empty";
+      }
+      st.cardId = cardId;
+      st.status = "filled";
+      selectedCardId = null;
+
+      renderSlotContent(key);
+      buildBank();
+      updateCheckButton(groupId);
+      updateGlobalProgress();
+    }
+
+    function clearSlot(groupId, role){
+      var key = groupId + "-" + role;
+      var st = slotState[key];
+      if(st.status === "correct") return;
+      st.cardId = null;
+      st.status = "empty";
+      renderSlotContent(key);
+      buildBank();
+      updateCheckButton(groupId);
+      updateGlobalProgress();
+    }
+
+    function flashMismatch(key, cardId){
+      var slot = slotEls[key];
+      slot.classList.add("dragover");
+      setTimeout(function(){ slot.classList.remove("dragover"); }, 300);
+      var cardEl = cfg.bankEl.querySelector('.card[data-id="' + cssEscape(cardId) + '"]');
+      if(cardEl){
+        cardEl.classList.add("shake");
+        setTimeout(function(){ cardEl.classList.remove("shake"); }, 450);
+      }
+    }
+
+    function updateCheckButton(groupId){
+      var allFilled = groupRoles[groupId].every(function(role){ return slotState[groupId+"-"+role].status !== "empty"; });
+      checkBtnEls[groupId].disabled = !allFilled;
+      statusEls[groupId].textContent = allFilled ? "Ready to check." : "";
+    }
+
+    function checkGroup(groupId){
+      var roles = groupRoles[groupId];
+      var correctCount = 0;
+      roles.forEach(function(role){
+        var key = groupId + "-" + role;
+        var st = slotState[key];
+        if(st.status === "correct"){ correctCount++; return; }
+        var piece = findPiece(st.cardId);
+        var isCorrect = piece && piece.group === groupId && piece.role === role;
+        st.status = isCorrect ? "correct" : "incorrect";
+        if(isCorrect) correctCount++;
+        renderSlotContent(key);
+      });
+      statusEls[groupId].textContent = correctCount + " of " + roles.length + " correct" +
+        (correctCount < roles.length ? " — tap a red slot to try a different card." : " — nice work!");
+      updateCheckButton(groupId);
+      updateGlobalProgress();
+    }
+
+    function updateGlobalProgress(){
+      var count = 0;
+      for(var k in slotState){ if(slotState[k].status === "correct") count++; }
+      cfg.progressFillEl.style.width = (count/totalPieces*100) + "%";
+      cfg.progressLabelEl.textContent = count + " / " + totalPieces + " correct";
+      if(cfg.revealBtnEl) cfg.revealBtnEl.disabled = count < totalPieces;
+    }
+
+    function assembleGroup(groupId){
+      var parts = [];
+      GROUPS.find(function(g){ return g.id === groupId; }).layout.forEach(function(block){
+        var roles = block.type === "single" ? [block.role] : block.roles;
+        roles.forEach(function(role){
+          var piece = findPieceByGroupRole(groupId, role);
+          var text = piece.text;
+          if(piece.joinLower) text = text.charAt(0).toLowerCase() + text.slice(1);
+          parts.push(text);
+        });
+      });
+      return parts.join(" ");
+    }
+
+    function reset(){
+      GROUPS.forEach(function(g){
+        groupRoles[g.id].forEach(function(role){ slotState[g.id+"-"+role] = {cardId:null, status:"empty"}; });
+      });
+      selectedCardId = null;
+      if(cfg.revealPanelEl) cfg.revealPanelEl.classList.remove("show");
+      if(cfg.hintBtnEl){
+        document.querySelectorAll(".para-hint").forEach(function(h){ h.classList.remove("show"); });
+        cfg.hintBtnEl.textContent = "Show paragraph hints";
+      }
+      buildColumns();
+      buildBank();
+      updateGlobalProgress();
+    }
+
+    if(cfg.resetBtnEl) cfg.resetBtnEl.addEventListener("click", reset);
+
+    if(cfg.revealBtnEl){
+      cfg.revealBtnEl.addEventListener("click", function(){
+        if(cfg.revealTargets){
+          GROUPS.forEach(function(g, i){
+            if(cfg.revealTargets[i]) cfg.revealTargets[i].textContent = assembleGroup(g.id);
+          });
+        }
+        if(cfg.revealPanelEl){
+          cfg.revealPanelEl.classList.add("show");
+          cfg.revealPanelEl.scrollIntoView({behavior:"smooth", block:"start"});
+        }
+      });
+    }
+
+    if(cfg.hintBtnEl){
+      cfg.hintBtnEl.addEventListener("click", function(){
+        var hints = document.querySelectorAll(".para-hint");
+        var showing = hints[0] && hints[0].classList.contains("show");
+        hints.forEach(function(h){ h.classList.toggle("show", !showing); });
+        cfg.hintBtnEl.textContent = showing ? "Show paragraph hints" : "Hide paragraph hints";
+      });
+    }
+
+    buildColumns();
+    buildBank();
+    updateGlobalProgress();
+  }
+
+  // ================= WARM-UP CONFIG =================
+  var warmupRoleMeta = {
+    topic:    {letter:"T", label:"T — Topic Sentence", placeholder:"Drop the topic sentence here"},
+    phrase:   {letter:"E", label:"Signal Phrase",      placeholder:"Drop a signal phrase here"},
+    evidence: {letter:"E", label:"Evidence",           placeholder:"Drop the evidence here"},
+    analysis: {letter:"A", label:"A — Analysis",       placeholder:"Drop the analysis here"},
+    merging:  {letter:"M", label:"M — Merging Sentence", placeholder:"Drop the merging sentence here"}
+  };
+
+  var warmupPieces = [
+    {id:"w-topic", group:1, role:"topic", text:"Minecraft deserves to be called the greatest video game of all time because of how much creative freedom it gives players."},
+    {id:"w-phrase", group:1, role:"phrase", text:"For example,"},
+    {id:"w-evidence", group:1, role:"evidence", text:"Players can build anything from a simple house to a massive, fully working computer entirely out of in-game blocks.", joinLower:true},
+    {id:"w-analysis", group:1, role:"analysis", text:"This shows that Minecraft isn't a game with one correct way to play — it's closer to a toolbox, which is why millions of players keep coming back to build completely different things."},
+    {id:"w-merging", group:1, role:"merging", text:"That kind of open-ended creative freedom is exactly why Minecraft has a legitimate claim to being the greatest video game ever made — and that same claim-evidence-analysis structure is exactly what the paragraphs below will use."}
+  ];
+
+  var warmupGroups = [
+    {
+      id:1, title:"Warm-Up Paragraph", shortLabel:"Warm-Up Paragraph", showNum:false,
+      layout:[
+        {type:"single", role:"topic"},
+        {type:"pair", roles:["phrase","evidence"], groupLabel:"Evidence sentence"},
+        {type:"single", role:"analysis"},
+        {type:"single", role:"merging"}
+      ]
+    }
+  ];
+
+  createBoard({
+    pieces: warmupPieces,
+    groups: warmupGroups,
+    roleMeta: warmupRoleMeta,
+    bankEl: document.getElementById("wBank"),
+    columnsEl: document.getElementById("wColumns"),
+    progressFillEl: document.getElementById("wProgressFill"),
+    progressLabelEl: document.getElementById("wProgressLabel"),
+    revealBtnEl: document.getElementById("wRevealBtn"),
+    resetBtnEl: document.getElementById("wResetBtn"),
+    revealPanelEl: document.getElementById("wRevealPanel"),
+    revealTargets: [document.getElementById("wRevealText")]
+  });
+
+  // ================= MAIN EXERCISE CONFIG =================
+  var mainRoleMeta = {
+    topic:    {letter:"T", label:"T — Topic Sentence", placeholder:"Drop the topic sentence here"},
+    phrase:   {letter:"E", label:"Signal Phrase",      placeholder:"Drop a signal phrase here"},
+    evidence: {letter:"E", label:"Evidence",           placeholder:"Drop the evidence here"},
+    analysis: {letter:"A", label:"A — Analysis",       placeholder:"Drop the analysis here"},
+    merging:  {letter:"M", label:"M — Merging Sentence", placeholder:"Drop the merging sentence here"}
+  };
+
+  var mainPieces = [
+    {id:"p1-topic", group:1, role:"topic", text:"The first major advantage Sapiens gained over other animals was learning to control fire."},
+    {id:"p1-phrase", group:1, role:"phrase", text:"Harari explains that"},
+    {id:"p1-evidence", group:1, role:"evidence", text:"Early humans used fire to cook food, stay warm through cold nights, and scare away dangerous predators.", joinLower:true},
+    {id:"p1-analysis", group:1, role:"analysis", text:"Cooking mattered because it made food easier to digest, so the body could absorb more energy and nutrients from every meal — extra fuel that may have helped support the growth of a larger, more complex brain over time."},
+    {id:"p1-merging", group:1, role:"merging", text:"Fire gave early humans more energy and free time, but it was a different kind of invention that would soon let them do something no other animal could: cooperate in massive numbers."},
+
+    {id:"p2-topic", group:2, role:"topic", text:"The biggest turning point for Sapiens came when they developed the ability to believe in shared stories that exist only in the imagination."},
+    {id:"p2-phrase", group:2, role:"phrase", text:"Harari illustrates this with a striking example:"},
+    {id:"p2-evidence", group:2, role:"evidence", text:"A company can own property and be sued in court, even though no one can ever touch or see it — it exists only because enough people agree to act as if it does."},
+    {id:"p2-analysis", group:2, role:"analysis", text:"This matters because believing in the same invented idea — a company, a nation, a god — lets total strangers trust and cooperate on a massive scale, something most animals can only manage with a small, familiar group."},
+    {id:"p2-merging", group:2, role:"merging", text:"This new kind of large-scale cooperation didn't just change how Sapiens organized themselves — it also shaped the surprisingly comfortable way many of them actually lived day to day."},
+
+    {id:"p3-topic", group:3, role:"topic", text:"Although foragers owned almost nothing, Harari argues that their lifestyle was, in its own way, remarkably comfortable."},
+    {id:"p3-phrase", group:3, role:"phrase", text:"The data Harari cites shows that"},
+    {id:"p3-evidence", group:3, role:"evidence", text:"Most foraging groups worked only three to six hours a day to meet their needs and ate a wide variety of foods, from fruits and nuts to shellfish and the occasional piece of meat.", joinLower:true},
+    {id:"p3-analysis", group:3, role:"analysis", text:"Harari measures affluence not by how much a person owns, but by how easily their wants are met, and by that standard, foragers were often doing better than the farmers who came after them, who worked longer hours for a less varied diet."},
+    {id:"p3-merging", group:3, role:"merging", text:"Fire, shared stories, and a surprisingly workable daily life all helped early Sapiens thrive — but as the next chapter shows, this same adaptability would soon have major consequences for the other species sharing their world."}
+  ];
+
+  var mainLayout = [
+    {type:"single", role:"topic"},
+    {type:"pair", roles:["phrase","evidence"], groupLabel:"Evidence sentence"},
+    {type:"single", role:"analysis"},
+    {type:"single", role:"merging"}
+  ];
+
+  var mainGroups = [
+    {id:1, title:"T.E.A.M. Paragraph 1", shortLabel:"Paragraph 1", showNum:true, layout:mainLayout,
+      hint:"This paragraph is about an early invention that changed daily survival."},
+    {id:2, title:"T.E.A.M. Paragraph 2", shortLabel:"Paragraph 2", showNum:true, layout:mainLayout,
+      hint:"This paragraph is about a mental ability that let strangers cooperate."},
+    {id:3, title:"T.E.A.M. Paragraph 3", shortLabel:"Paragraph 3", showNum:true, layout:mainLayout,
+      hint:"This paragraph is about what everyday life was actually like."}
+  ];
+
+  createBoard({
+    pieces: mainPieces,
+    groups: mainGroups,
+    roleMeta: mainRoleMeta,
+    bankEl: document.getElementById("bank"),
+    columnsEl: document.getElementById("paraColumns"),
+    progressFillEl: document.getElementById("progressFill"),
+    progressLabelEl: document.getElementById("progressLabel"),
+    revealBtnEl: document.getElementById("revealBtn"),
+    resetBtnEl: document.getElementById("resetBtn"),
+    hintBtnEl: document.getElementById("hintBtn"),
+    revealPanelEl: document.getElementById("revealPanel"),
+    revealTargets: [document.getElementById("revealP1"), document.getElementById("revealP2"), document.getElementById("revealP3")]
+  });
+
+})();
+</script>
+</body>
+</html>

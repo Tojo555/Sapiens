@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sapiens Quest: The Marketplace of Trust</title>
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #eaf0ee;
+    --surface: #ffffff;
+    --surface-2: #dfe8e4;
+    --text: #1b2925;
+    --muted: #55665f;
+    --border: #c6d4ce;
+    --accent: #7d5f0c;
+    --accent-ink: #ffffff;
+    --coin: #c9a227;
+    --good: #23704a;
+    --good-bg: #dff1e7;
+    --bad: #a83a2c;
+    --bad-bg: #f8e3df;
+    --hint-bg: #fbf1cf;
+    --shadow: 0 2px 10px rgba(20, 50, 40, 0.12);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1a17; --surface: #172420; --surface-2: #1f302b; --text: #e6efe9;
+      --muted: #9fb2aa; --border: #2e433c; --accent: #e2b84a; --accent-ink: #1a1404;
+      --coin: #e2b84a; --good: #6fd197; --good-bg: #163024; --bad: #f08a78; --bad-bg: #3a1c17;
+      --hint-bg: #3a3214; --shadow: 0 2px 10px rgba(0, 0, 0, 0.5); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1a17; --surface: #172420; --surface-2: #1f302b; --text: #e6efe9;
+    --muted: #9fb2aa; --border: #2e433c; --accent: #e2b84a; --accent-ink: #1a1404;
+    --coin: #e2b84a; --good: #6fd197; --good-bg: #163024; --bad: #f08a78; --bad-bg: #3a1c17;
+    --hint-bg: #3a3214; --shadow: 0 2px 10px rgba(0, 0, 0, 0.5); color-scheme: dark;
+  }
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; min-height: 100%; background: var(--bg); color: var(--text);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    line-height: 1.5; font-size: 17px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 14px 16px 40px; }
+  .stamp { text-align: right; font-size: 12.5px; font-style: italic; color: var(--muted); margin: 0 0 6px; }
+  h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; margin: 0; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 0 14px; flex-wrap: wrap; }
+  .score-pill { background: var(--surface); border: 2px solid var(--coin); border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: 15px; box-shadow: var(--shadow); }
+  .powerups { display: flex; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .progress { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border); }
+  .progress > div { height: 100%; width: 0; background: var(--coin); transition: width 0.4s ease; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); }
+  .badge { display: inline-block; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+  .card h2 { font-size: 25px; margin-bottom: 8px; }
+  .prompt { font-size: 18px; margin: 10px 0 14px; }
+  .meta { font-size: 14px; color: var(--muted); }
+  .hero { text-align: center; padding: 8px 0 4px; }
+  .hero .emoji { font-size: 54px; }
+  .hero h1 { font-size: 34px; margin: 6px 0; }
+  .rules { text-align: left; background: var(--surface-2); border-radius: 12px; padding: 12px 16px; margin: 16px 0; font-size: 15.5px; }
+  .rules ul { margin: 6px 0 0; padding-left: 20px; }
+  button { font: inherit; cursor: pointer; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 10px 14px; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+  button.ghost { background: transparent; }
+  .opt { display: block; width: 100%; text-align: left; margin: 8px 0; padding: 12px 14px; }
+  .opt:hover:not(:disabled) { border-color: var(--accent); }
+  .opt.right { background: var(--good-bg); border-color: var(--good); color: var(--text); }
+  .opt.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--text); }
+  .opt.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 92px; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; resize: vertical; }
+  textarea:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .hintbox { background: var(--hint-bg); border-left: 5px solid var(--coin); border-radius: 8px; padding: 10px 12px; margin-top: 12px; font-size: 15.5px; }
+  .followup { background: var(--surface-2); border-left: 5px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-top: 12px; font-size: 15.5px; }
+  .feedback { margin-top: 10px; padding: 10px 12px; border-radius: 10px; font-size: 15.5px; }
+  .feedback.good { background: var(--good-bg); }
+  .feedback.bad { background: var(--bad-bg); }
+  .scorebox { margin-top: 16px; padding: 12px; border: 2px dashed var(--border); border-radius: 12px; }
+  .scorebox p { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+  .scorebtns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scorebtns button { min-width: 48px; font-weight: 700; }
+  .scorebtns button.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .scorelabels { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .master { margin-top: 14px; background: var(--good-bg); border-left: 5px solid var(--good); border-radius: 8px; padding: 10px 14px; }
+  .master p { margin: 6px 0 0; font-size: 16px; }
+  .refresher { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin: 0 0 14px; font-size: 15.5px; }
+  .refresher summary { cursor: pointer; font-weight: 700; }
+  .refresher ul { margin: 8px 0 2px; padding-left: 20px; }
+  .refresher li { margin: 4px 0; }
+  .carry { background: var(--hint-bg); border-radius: 10px; padding: 10px 12px; margin: 0 0 12px; font-size: 16px; }
+  .checklist { margin: 4px 0 12px; padding-left: 22px; font-size: 15.5px; }
+  .checklist li { margin: 3px 0; }
+  .timer { font-size: 44px; font-weight: 800; text-align: center; color: var(--accent); }
+  .final-score { font-size: 56px; font-weight: 800; text-align: center; color: var(--accent); margin: 4px 0; }
+  .rank { text-align: center; font-family: Georgia, serif; font-size: 24px; margin-bottom: 10px; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; margin: 10px 0; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-size: 13.5px; }
+  .sent { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin: 10px 0; background: var(--bg); }
+  .sent p { margin: 0 0 8px; font-size: 16.5px; }
+  .labbtns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .labbtns button { padding: 6px 10px; font-size: 14px; }
+  .labbtns button.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+  .labbtns button.right { background: var(--good-bg); border-color: var(--good); color: var(--text); font-weight: 700; opacity: 1; }
+  .labbtns button.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--text); opacity: 1; }
+  .evidence { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; margin: 0 0 10px; font-size: 16px; }
+  .passage { font-size: 17px; line-height: 1.7; border-left: 5px solid var(--border); }
+  mark.hl { background: var(--hint-bg); color: var(--text); border-bottom: 3px solid var(--coin); padding: 1px 3px; border-radius: 3px; font-weight: 700; }
+  .tk-purpose { background: var(--hint-bg); border-radius: 10px; padding: 10px 12px; margin: 0 0 14px; font-size: 16px; }
+  .tk-list { display: flex; flex-direction: column; gap: 10px; }
+  .tk-row { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border); border-left: 6px solid var(--tk); border-radius: 12px; padding: 12px; background: var(--bg); }
+  .tk-letter { flex: 0 0 44px; height: 44px; border-radius: 50%; background: var(--tk); color: #fff; font-family: Georgia, serif; font-size: 24px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .tk-body { flex: 1; min-width: 0; }
+  .tk-body h3 { font-size: 19px; margin: 2px 0 4px; }
+  .tk-ask { margin: 0 0 6px; font-size: 16px; }
+  .tk-tip { margin: 6px 0 0; font-size: 15px; color: var(--muted); }
+  .tk-ladder { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 6px 0; }
+  .tk-step { border-radius: 8px; padding: 6px 8px; font-size: 14px; display: flex; flex-direction: column; border: 1px solid var(--border); }
+  .tk-step0 { background: var(--bad-bg); }
+  .tk-step1 { background: var(--hint-bg); }
+  .tk-step2 { background: var(--good-bg); border: 2px solid var(--good); }
+  .tk-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .tk-chip { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 4px 10px; font-size: 14px; }
+  .tk-test { margin-top: 14px; border: 2px dashed var(--coin); border-radius: 12px; padding: 10px 12px; font-size: 16px; }
+  @media (max-width: 480px) { .tk-ladder { grid-template-columns: 1fr; } .tk-letter { flex-basis: 36px; height: 36px; font-size: 20px; } }
+  @media print {
+    .topbar, .progress, .foot, .row, button { display: none !important; }
+    body { background: #fff; color: #000; }
+    .card { box-shadow: none; border: none; padding: 0; }
+    .tk-row { break-inside: avoid; }
+  }
+  .foot { margin-top: 22px; font-size: 12.5px; color: var(--muted); text-align: center; }
+  @media (max-width: 480px) {
+    body { font-size: 16px; }
+    .hero h1 { font-size: 28px; }
+    .card { padding: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .progress > div { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="stamp">Prepared with AI support, reviewed by Mr. Johnson</p>
+  <div class="topbar" id="topbar" hidden>
+    <div class="score-pill" id="scorePill">🪙 0 coins</div>
+    <div class="powerups" id="powerStatus"></div>
+  </div>
+  <div class="progress" id="progressWrap" hidden><div id="progressBar"></div></div>
+  <main id="stage" aria-live="polite"></main>
+  <p class="foot">Sapiens Quest: Chapter 10, “The Scent of Money.” A reading diagnostic and paragraph lab.</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LABELS2 = ["Not yet", "Getting there", "Nailed it"];
+  var LABELS3 = ["Not yet", "Nailed it"];
+  var QUAL = ["Weak", "Average", "Strong"];
+  var QUAL_REFRESH = [
+    "Weak: repeats or summarizes the evidence. It adds nothing new.",
+    "Average: names what the evidence means, but doesn’t explain HOW it proves the point.",
+    "Strong: explains how or why (watch for “because,” “which means,” “this matters because”) and ties back to the claim."
+  ];
+
+  var CARDS = [
+    // ===== DIAGNOSTIC =====
+    // Level 1
+    { id: "1A", level: 1, type: "mc", max: 1,
+      title: "Card 1A · The Trouble with Trading",
+      prompt: "What is the main problem with barter (trading goods directly, with no money)?",
+      options: ["It was against the law in most kingdoms", "You need someone who has what you want AND wants what you have, and every item needs its own price", "Gold was too heavy to trade", "Only kings were allowed to barter"],
+      correct: 1,
+      explain: "If the shoemaker wants apples but the apple farmer doesn’t want shoes, the trade is stuck. And how many apples is a pair of shoes worth? With hundreds of goods, you’d need thousands of different exchange rates.",
+      hint: "Think about the shoemaker and the apple grower." },
+    { id: "1B", level: 1, type: "multi", max: 3, pick: 3,
+      title: "Card 1B · Money’s Three Powers",
+      prompt: "Harari says money has special powers that barter lacks. Which THREE are they? Pick exactly three, then check.",
+      options: [
+        "It converts almost anything into almost anything else",
+        "It makes people kinder to each other",
+        "It stores wealth for a long time without rotting",
+        "It guarantees that every trade is fair",
+        "It transports wealth easily from place to place",
+        "It ends all arguments between countries"
+      ],
+      correct: [0, 2, 4],
+      explain: "Convert, store, transport. A rice farmer can turn rice into money, save it for years, and carry it to another city, which a field of rice could never do. That’s also why barley was a weak kind of money: it rots and it’s heavy.",
+      hint: "Think of a rice field: what CAN’T you do with it that you can do with money?" },
+
+    // Level 2
+    { id: "2A", level: 2, type: "mc", max: 1,
+      title: "Card 2A · The King’s Stamp",
+      prompt: "The first coins (from Lydia, around 640 BC) carried a ruler’s stamp. What did the stamp give traders that a plain lump of silver didn’t?",
+      options: ["It made the coin prettier", "A ruler’s guarantee of its weight and purity, so traders could trust it without weighing it", "It made the silver heavier", "It made the coin impossible to steal"],
+      correct: 1,
+      explain: "The stamp was a promise from an authority. Trusting the coin meant trusting the king who stamped it. Money keeps asking for trust.",
+      hint: "What does a stamp or seal tell you about who stands behind something?" },
+    { id: "2B", level: 2, type: "mc", max: 1,
+      title: "Card 2B · Kinds of Real (Chapter 6 callback)",
+      prompt: "Harari writes that money asks us to believe that other people believe in something. That makes money…",
+      options: ["Objective: real whether or not anyone believes in it", "Subjective: real only in one person’s mind", "Intersubjective: real because many people share the belief", "Imaginary and therefore useless"],
+      correct: 2,
+      explain: "Money works because millions of people trust it together. It isn’t useless, though: shared beliefs have enormous power.",
+      hint: "Remember the three kinds of real from the Pyramid Quest." },
+
+    // Level 3
+    { id: "3A", level: 3, type: "label", max: 4,
+      title: "Card 3A · Where Does the Value Come From?",
+      prompt: "For each kind of money, decide where its value mostly comes from. Then check.",
+      refresherTitle: "📚 Quick reminder (tap to open or close)",
+      refresher: [
+        "Value in the thing itself: it would still be useful even if nobody traded it (you could eat it or use it).",
+        "Value from shared trust: it’s worth something mainly because others agree it is."
+      ],
+      choices: ["The thing itself", "Shared trust"],
+      sentences: [
+        { text: "A sack of barley in ancient Sumer", correct: 0 },
+        { text: "A dollar bill", correct: 1 },
+        { text: "Cigarettes in a prison camp, traded even by non-smokers", correct: 1 },
+        { text: "A bag of salt", correct: 0 }
+      ],
+      explain: "Barley and salt are useful on their own, so they have a safety net if trust fails. A dollar bill, and cigarettes passed around by people who don’t smoke, are worth something mainly because people agree they are. Over history, money depends less and less on stuff and more and more on trust.",
+      hint: "Ask: if everyone stopped trading tomorrow, could I still use it for something?" },
+    { id: "3B", level: 3, type: "label", max: 4,
+      title: "Card 3B · Great Power or Hidden Price?",
+      prompt: "Harari says money is powerful AND dangerous. Sort each statement. Then check.",
+      choices: ["Money’s power", "Money’s price"],
+      sentences: [
+        { text: "A farmer can sell rice and buy shoes from total strangers.", correct: 0 },
+        { text: "People start trusting money more than their neighbors and family.", correct: 1 },
+        { text: "Wealth can be saved for years without rotting.", correct: 0 },
+        { text: "Loyalty and friendship start being treated like deals.", correct: 1 }
+      ],
+      explain: "The same thing that makes money great (anything can be turned into money) also lets it wear down values like loyalty and community, which used to be things you couldn’t buy.",
+      hint: "Is the statement something that helps people cooperate, or something that weakens their bonds?" },
+
+    // Level 4
+    { id: "4A", level: 4, type: "open", max: 3,
+      title: "Card 4A · The Big Idea",
+      prompt: "In 2 or 3 sentences: what does Harari say money really IS? Give one example he uses.",
+      hint: "It isn’t the metal or the paper. What would have to disappear for money to stop working?",
+      master: "Harari argues that money isn’t really a physical thing. It’s a system of mutual trust, which he calls “the most universal and most efficient system of mutual trust ever devised.” For example, prison-camp cigarettes worked as money only because people trusted that others would accept them.",
+      labels: ["Off target", "Nailed it"] },
+
+    // ===== TEAM LAB =====
+    // Level 5: The Big Question (Socratic ladder)
+    { id: "L0", level: 5, type: "discuss",
+      title: "The Big Question · Your First Answer",
+      prompt: "This was your homework: What’s so great about money? Type the answer you prepared. Don’t worry about making it perfect, because we’re going to make it better together.",
+      followup: "Couldn’t people just get what they need by trading?" },
+    { id: "L1", level: 5, type: "discuss",
+      title: "The Big Question · Money vs. Strawberries",
+      prompt: "What makes money different from strawberries or grain?",
+      followup: "Say you’re a strawberry farmer saving up for a house in ten years. What’s your problem? And what if you need to buy something in a city far away?",
+      master: "Strawberries rot in days, but money keeps, so money can STORE wealth. You can carry a lot of money in your pocket, but not a ton of grain, so money can TRANSPORT wealth." },
+    { id: "L2", level: 5, type: "discuss",
+      title: "The Big Question · The Shoemaker’s Problem",
+      prompt: "A shoemaker wants apples, but the apple farmer doesn’t need shoes. What does money fix here?",
+      followup: "How many apples is a pair of shoes worth? Who gets to decide?",
+      master: "Money is a middleman everyone accepts. The shoemaker can sell shoes to anyone and buy apples from anyone, and everything has a price in the same units. Money CONVERTS almost anything into almost anything else." },
+    { id: "L3", level: 5, type: "discuss",
+      title: "The Big Question · Why Would a Stranger Take It?",
+      prompt: "Why would a total stranger give you real food in exchange for a piece of paper?",
+      followup: "Would the stranger accept a dollar you drew yourself with a pen? What’s the difference?",
+      master: "Because the stranger trusts that the NEXT person will accept that paper too. Money runs on mutual trust: I trust you, you trust the store, the store trusts the bank, and the government stands behind it all." },
+    { id: "L4", level: 5, type: "discuss",
+      title: "The Big Question · Barley or Salt vs. a Dollar",
+      prompt: "When people used barley or salt as money, how was that different from using a dollar bill today?",
+      followup: "Suppose everyone stopped believing in money tomorrow. What could you do with a sack of barley? With a $20 bill?",
+      master: "Barley and salt were useful on their own: if trust failed, you could still eat the barley or use the salt. A dollar bill is just paper. Its value is almost pure trust, which makes it intersubjective. Money today asks for much more trust than barley ever did." },
+    { id: "L5", level: 5, type: "discuss",
+      title: "The Big Question · When Trust Breaks",
+      prompt: "What do you think happens to money if people stop trusting it?",
+      followup: "In Germany in 1923, people carried cash in wheelbarrows to buy bread. What had changed: the paper, or the trust?",
+      master: "Money becomes worthless, even though the paper hasn’t changed at all. That proves money’s value was the trust, not the paper." },
+    { id: "L6", level: 5, type: "discuss",
+      title: "The Big Question · Is Anything NOT Great?",
+      prompt: "Is there anything bad about money, according to Harari?",
+      followup: "Should you be able to buy a friend’s loyalty? Why does that feel wrong?",
+      master: "Money can make people trust money more than each other. When everything has a price, things like friendship, loyalty and community can start to feel like deals." },
+
+    // Level 6: Bridges and Context
+    { id: "T1", level: 6, type: "mc", max: 1,
+      title: "Bridges · Card 1 · Choose the Transition",
+      prompt: "“Barley had value because people could eat it. ______, it rotted quickly and was heavy to carry.”",
+      options: ["For example", "However", "As a result", "In addition"],
+      correct: 1,
+      explain: "The second sentence goes AGAINST the first (a strength, then a weakness), so you need a contrast word: however, yet, on the other hand.",
+      hint: "Is the second sentence agreeing with the first, or turning the other way?" },
+    { id: "T2", level: 6, type: "mc", max: 1,
+      title: "Bridges · Card 2 · Choose the Transition",
+      prompt: "“Coins carried a king’s stamp guaranteeing their weight. ______, traders no longer had to weigh silver at every sale.”",
+      options: ["However", "For instance", "As a result", "On the other hand"],
+      correct: 2,
+      explain: "The stamp CAUSED the change, so you need a cause-and-effect word: as a result, therefore, because of this.",
+      hint: "Did the first sentence cause the second?" },
+    { id: "T3", level: 6, type: "mc", max: 1,
+      title: "Bridges · Card 3 · Between Paragraphs",
+      prompt: "Your first body paragraph argued that money stores wealth. Which sentence is the strongest way to start the next paragraph, which is about trust?",
+      options: ["Another thing is trust.", "Next, I will talk about trust.", "Even more important than storing wealth, money lets complete strangers trust each other.", "Also, trust is important too."],
+      correct: 2,
+      explain: "A great transition echoes the last point (“storing wealth”) and pushes forward to the new one (“trust”). It also tells the reader which point matters more. The others just say “here’s the next thing.”",
+      hint: "Which one connects the old idea to the new one instead of just announcing the new one?" },
+    { id: "C1", level: 6, type: "mc", max: 1,
+      title: "Setting the Stage · Card 1 · Introduce the Quote",
+      prompt: "Which version best sets up Harari’s quote?",
+      options: [
+        "“Money is the most universal and most efficient system of mutual trust ever devised.”",
+        "Harari says, “money is the most universal and most efficient system of mutual trust ever devised.”",
+        "After showing that people everywhere, from shell-trading villages to prison camps, accepted strange kinds of money, Harari concludes that money is “the most universal and most efficient system of mutual trust ever devised.”"
+      ],
+      correct: 2,
+      explain: "The first drops the quote in with no setup. The second names who said it but not why it matters. The third gives context, so the reader knows what led Harari to this conclusion before reading the quote.",
+      hint: "Which one tells the reader where the quote came from AND why Harari said it?" },
+    { id: "C2", level: 6, type: "open", max: 2,
+      title: "Setting the Stage · Card 2 · Write a Lead-In",
+      prompt: "Here is a piece of evidence with no setup: “Cigarettes were used as money in prison camps.” Write one sentence that introduces it with context, so a reader understands why it matters.",
+      hint: "Start with something like “To show that…” or “Even in…” and then give the evidence.",
+      master: "To prove that money can be almost anything people agree to trust, Harari points out that in prison camps, cigarettes were used as money, even by prisoners who didn’t smoke.",
+      labels: LABELS2 },
+
+    // Level 7: Weighing Analysis
+    { id: "A1", level: 7, type: "label", max: 3,
+      title: "Weighing Analysis · Card 1 · Sort the Scales",
+      prompt: "The evidence is shown below. Rate each analysis sentence as weak, average or strong. Then check.",
+      evidence: "Evidence: In prison camps, even non-smokers accepted cigarettes as payment.",
+      refresherTitle: "📚 What makes analysis strong? (tap to open or close)",
+      refresher: QUAL_REFRESH,
+      choices: QUAL,
+      sentences: [
+        { text: "This shows that money can be anything people agree on.", correct: 1 },
+        { text: "This shows that prisoners used cigarettes as money.", correct: 0 },
+        { text: "Because even non-smokers took cigarettes, their value came from trusting that others would take them, not from the tobacco, which proves money’s real power is mutual trust.", correct: 2 }
+      ],
+      explain: "The weak one just repeats the evidence. The average one gives a meaning but doesn’t explain how we know. The strong one explains WHY (non-smokers had no use for the tobacco) and ties it to the claim (trust).",
+      hint: "Which sentence would still make sense if you deleted the evidence? That one is probably just restating." },
+    { id: "A2", level: 7, type: "label", max: 3,
+      title: "Weighing Analysis · Card 2 · Sort the Scales",
+      evidence: "Evidence: Most of the world’s money exists only as numbers on computers, not as coins or bills.",
+      prompt: "Rate each analysis sentence. Then check.",
+      refresherTitle: "📚 What makes analysis strong? (tap to open or close)",
+      refresher: QUAL_REFRESH,
+      choices: QUAL,
+      sentences: [
+        { text: "If most money is just numbers on a screen, then money can’t really be about paper or metal; it exists only because billions of people believe those numbers mean something, which makes it intersubjective.", correct: 2 },
+        { text: "Most money is on computers.", correct: 0 },
+        { text: "This means money is mostly not physical.", correct: 1 }
+      ],
+      explain: "Strong analysis follows the idea all the way: not physical → so what holds it up? → shared belief → which links to intersubjective reality.",
+      hint: "Look for the sentence that answers “so what?”" },
+    { id: "A3", level: 7, type: "open", max: 2,
+      title: "Weighing Analysis · Card 3 · Upgrade It",
+      passage: [
+        { t: "Harari explains that barley, the first Sumerian money, rotted quickly and was heavy to carry, while coins could be saved for years and slipped into a pocket. ", tag: "Evidence" },
+        { t: "This shows coins were better than barley.", hl: true, tag: "Analysis" }
+      ],
+      prompt: "Here’s part of a paragraph. The evidence is fine, but the highlighted analysis is only AVERAGE. Rewrite just the highlighted sentence to make it STRONG: explain HOW the evidence proves something bigger about money.",
+      hint: "Try starting with “Because…” and end with what this tells us about what money is for.",
+      master: "Because coins didn’t rot and could fit in a pocket, people could finally save their wealth for years and carry it to distant markets, which shows that money’s value isn’t only in buying things today but in storing and moving wealth across time and space.",
+      labels: LABELS2 },
+    { id: "U1", level: 7, type: "mc", max: 1,
+      title: "Polish · Card 1 · Fix the Vague Sentence",
+      passage: [
+        { t: "To show that money can be almost anything people agree on, Harari points out that in prison camps, even prisoners who didn’t smoke accepted cigarettes as payment. " },
+        { t: "This shows it is important.", hl: true }
+      ],
+      passageKey: "Highlighted = the vague sentence to replace.",
+      prompt: "The highlighted sentence is vague: what is “this,” and what is “it”? Which revision fixes it best? Careful: longer isn’t always better.",
+      options: [
+        "This example clearly and powerfully shows us that it is something very important for all of us to think about when it comes to money and the way it works in the world.",
+        "This shows that prisoners in the camps had very hard lives and often had to find creative ways to survive with only the few things they were given.",
+        "The non-smokers prove that trust, not tobacco, gave the cigarettes their value.",
+        "This proves that cigarettes were more valuable than gold or silver, which is why prisoners in the camps wanted them more than anything else."
+      ],
+      correct: 2,
+      explain: "The first is long but still vague: “this,” “it” and “something very important” never say anything specific. The second is specific but off topic: the paragraph is about money, not prison life. The fourth makes a claim the evidence doesn’t support. The short one wins because it names exactly what proves what: the non-smokers prove that trust gives the cigarettes value.",
+      hint: "Cross out every option that still uses “this” or “it” without saying what they are. Then ask which one is actually about money." },
+    { id: "U2", level: 7, type: "mc", max: 1,
+      title: "Polish · Card 2 · The Merging Sentence",
+      passage: [
+        { t: "Money’s greatest power is that it lets strangers trust each other enough to trade. To show this, Harari points out that the first coins, from Lydia, carried a king’s stamp guaranteeing their weight. Because traders trusted the stamp rather than the seller, they could buy from people they had never met. " },
+        { t: "[ merging sentence goes here ]", hl: true }
+      ],
+      passageKey: "Highlighted = where the last sentence goes.",
+      prompt: "Which sentence makes the strongest ending for this paragraph?",
+      options: [
+        "In conclusion, money is great because it lets strangers trust each other enough to trade with one another.",
+        "Yet if trust is all that holds money up, trust is also what we risk when we let money replace loyalty.",
+        "Money has been around for thousands of years, from barley in Sumer to coins in Lydia to the bills and cards people use every single day all around the world.",
+        "This shows why money is so important and why everyone should really try to understand how it works in their lives."
+      ],
+      correct: 1,
+      explain: "The first just repeats the topic sentence. The third is a history summary that wanders away from trust. The fourth is vague (“this,” “it,” “so important”). The winner pulls the paragraph’s idea (trust) together and adds a new layer, money’s downside, leaving the reader something to think about.",
+      hint: "Which ending says something the topic sentence didn’t already say, while staying on the topic of trust?" },
+
+    // Level 8: Reference graphic
+    { id: "TK", level: 8, type: "toolkit",
+      title: "Your Paragraph Upgrade Toolkit",
+      prompt: "Everything from today’s lab, on one page.",
+      rows: [
+        { letter: "T", color: "#3b7dd8", name: "Topic sentence",
+          ask: "Does my first sentence make a claim someone could argue with?",
+          tip: "Not “This paragraph is about money.” Instead: “Money’s greatest power is that it lets strangers trust each other.”" },
+        { letter: "C", color: "#8a5cc7", name: "Context: set up the evidence",
+          ask: "Before my evidence, did I tell the reader who, what and why it matters?",
+          tip: "Never drop a quote in alone. Try: “To show that…, Harari points out that…”" },
+        { letter: "E", color: "#23a06b", name: "Evidence",
+          ask: "Is it a specific example from the text, not a general statement?",
+          tip: "Name the example: barley, the king’s stamp, prison-camp cigarettes." },
+        { letter: "A", color: "#d0663a", name: "Analysis",
+          ask: "Did I explain HOW or WHY the evidence proves my claim?",
+          ladder: [
+            ["Weak", "repeats the evidence"],
+            ["Average", "says what it means"],
+            ["Strong", "explains how or why, and ties back to the claim"]
+          ],
+          tip: "Power phrases: because… · which means… · this matters because…" },
+        { letter: "→", color: "#1f8fa3", name: "Transitions",
+          ask: "Can the reader see how each idea connects to the next?",
+          chips: [
+            ["Contrast", "however, yet, on the other hand"],
+            ["Cause and effect", "as a result, therefore"],
+            ["Addition", "in addition, furthermore"],
+            ["Example", "for instance, for example"]
+          ],
+          tip: "Between paragraphs, echo the last point and push to the new one: “Even more important than storing wealth, money…”" },
+        { letter: "✎", color: "#6b7c76", name: "Polish",
+          ask: "Did I swap vague words for exact ones?",
+          tip: "Replace “this” and “it” with real nouns. Replace “says” with argues, reveals, warns or illustrates." },
+        { letter: "M", color: "#b8456b", name: "Merging sentence",
+          ask: "Does my last sentence add a layer instead of repeating my topic sentence?",
+          tip: "Pull the evidence and analysis together, and leave the reader something to think about." }
+      ],
+      test: "Cover up your evidence and reread your analysis. If it says the same thing as the evidence, it’s only restating. Rewrite it to answer “so what?”" },
+
+    // Level 9: Backup paragraph
+    { id: "P1", level: 9, type: "open", max: 5,
+      givenTopic: "Money’s greatest power isn’t that it buys things; it’s that it lets complete strangers trust each other enough to trade and cooperate.",
+      title: "Backup · Build a New TEAM Paragraph",
+      prompt: "Backup option, if we didn’t revise one of your own paragraphs: here’s a strong topic sentence to start you off. It’s already in the box. Your job is to build everything after it.",
+      items: [
+        "Context: set up your evidence before you give it",
+        "E: one specific example from the chapter",
+        "A: STRONG analysis (because… which means…)",
+        "A transition word or phrase somewhere that shows how ideas connect",
+        "M: a merging sentence that adds a layer instead of repeating"
+      ],
+      hint: "Use one example you discussed today: barley vs. coins, cigarettes in prison camps, or money on computers.",
+      master: "(T) Money’s greatest power isn’t that it buys things; it’s that it lets complete strangers trust each other enough to trade and cooperate. (Context + E) Harari explains that barley, the first Sumerian money, rotted and was hard to carry, while the coins of King Alyattes of Lydia carried a ruler’s stamp that anyone could rely on. (A) Because a trader no longer had to know the seller personally, only trust the stamp, people who would never meet could still cooperate. As a result, money became what Harari calls “the most universal and most efficient system of mutual trust ever devised.” (M) However, this power has a price: when people trust money more than each other, the bonds of family and community can weaken.",
+      labels: ["Not yet", "All five pieces"] }
+  ];
+
+  var LEVEL_INFO = {
+    1: { name: "Level 1 · The Bazaar", sub: "Warm-up", part: "diag" },
+    2: { name: "Level 2 · The Mint", sub: "Built on Trust", part: "diag" },
+    3: { name: "Level 3 · The Merchant’s Ledger", sub: "Sort It Out", part: "diag" },
+    4: { name: "Level 4 · The Philosopher’s Scale", sub: "Big Idea Check", part: "diag" },
+    5: { name: "TEAM Lab · The Big Question", sub: "What’s so great about money?", part: "lab" },
+    6: { name: "TEAM Lab · Bridges and Context", sub: "Transitions and Setting Up Evidence", part: "lab" },
+    7: { name: "TEAM Lab · Weighing Analysis", sub: "Weak, Average or Strong?", part: "lab" },
+    8: { name: "TEAM Lab · Toolkit", sub: "For Revising Your Own Paragraphs", part: "lab" },
+    9: { name: "TEAM Lab · Backup", sub: "Write a New Paragraph", part: "lab" }
+  };
+
+  var MAX_MAIN = CARDS.reduce(function (s, c) { return s + (c.max || 0); }, 0);
+
+  var state;
+  function freshState() {
+    return { idx: -1, pts: {}, answered: {}, submitted: {}, rewindUsed: null, hintUsed: null, hintShown: {}, mcPick: {}, labPick: {}, multiPick: {}, texts: {}, followShown: {}, timer: null };
+  }
+  state = freshState();
+
+  var stage = document.getElementById("stage");
+  var topbar = document.getElementById("topbar");
+  var progWrap = document.getElementById("progressWrap");
+  var progBar = document.getElementById("progressBar");
+  var scorePill = document.getElementById("scorePill");
+  var powerStatus = document.getElementById("powerStatus");
+
+  function el(tag, attrs, children) {
+    var n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") n.className = attrs[k];
+      else if (k === "text") n.textContent = attrs[k];
+      else if (k.indexOf("on") === 0) n.addEventListener(k.slice(2), attrs[k]);
+      else n.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) n.appendChild(c); });
+    return n;
+  }
+
+  function totalPoints() {
+    var t = 0;
+    Object.keys(state.pts).forEach(function (k) { t += state.pts[k]; });
+    return t;
+  }
+
+  function updateHud() {
+    scorePill.textContent = "🪙 " + totalPoints() + " coins";
+    powerStatus.textContent = "";
+    powerStatus.appendChild(el("span", { text: state.rewindUsed ? "🔄 Rewind used" : "🔄 Rewind ready" }));
+    powerStatus.appendChild(el("span", { text: state.hintUsed ? "⚖️ Ask the Moneychanger used" : "⚖️ Ask the Moneychanger ready" }));
+    var done = Math.max(0, state.idx);
+    progBar.style.width = Math.min(100, Math.round((done / CARDS.length) * 100)) + "%";
+  }
+
+  function firstLabIndex() {
+    for (var i = 0; i < CARDS.length; i++) if (LEVEL_INFO[CARDS[i].level].part === "lab") return i;
+    return 0;
+  }
+
+  // ---------- Intro ----------
+  function showIntro() {
+    clearTimer();
+    state = freshState();
+    topbar.hidden = true; progWrap.hidden = true;
+    stage.textContent = "";
+    var ul = el("ul");
+    [
+      "Part 1, the Diagnostic (about 8 minutes): seven cards on the chapter’s biggest ideas.",
+      "Part 2, the TEAM Lab (about 20 minutes): we dig into your homework question, “What’s so great about money?”, then practice transitions, setting up evidence and strong analysis, and you finish by writing a paragraph.",
+      "Multiple-choice and sorting cards check themselves. For written cards, type your answer and press Submit. A master answer appears, and then Mr. Johnson awards the coins.",
+      "The Big Question cards have no coins. They’re a conversation. Type your thinking, then talk it over.",
+      "You get two one-time power-ups: 🔄 Rewind (20 seconds to look back in your book) and ⚖️ Ask the Moneychanger (a small hint). Using them costs nothing."
+    ].forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+    var card = el("section", { class: "card" }, [
+      el("div", { class: "hero" }, [
+        el("div", { class: "emoji", text: "🪙", "aria-hidden": "true" }),
+        el("h1", { text: "The Marketplace of Trust" }),
+        el("p", { class: "meta", text: "Sapiens Chapter 10: “The Scent of Money”" })
+      ]),
+      el("p", { class: "prompt", text: "Welcome, merchant! You’re about to travel from a Sumerian barley granary to a Lydian mint and onto Cortés’s ship. Every coin you earn proves you understand the strangest invention in history: a thing that works only because everyone believes in it." }),
+      el("div", { class: "rules" }, [el("strong", { text: "How the game works" }), ul]),
+      el("div", { class: "row" }, [
+        el("button", { class: "primary", text: "Start the Diagnostic ▶", onclick: function () { state.idx = 0; renderCard(); } }),
+        el("button", { text: "Jump to the TEAM Lab", onclick: function () { state.idx = firstLabIndex(); renderCard(); } })
+      ])
+    ]);
+    stage.appendChild(card);
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- Card router ----------
+  function renderCard() {
+    clearTimer();
+    if (state.idx >= CARDS.length) { showFinal(); return; }
+    var c = CARDS[state.idx];
+    topbar.hidden = false; progWrap.hidden = false;
+    updateHud();
+    stage.textContent = "";
+
+    var info = LEVEL_INFO[c.level];
+    var card = el("section", { class: "card" }, [
+      el("div", { class: "badge", text: info.name + " · " + info.sub }),
+      el("h2", { text: c.title }),
+      el("p", { class: "prompt", text: c.prompt })
+    ]);
+    var holder = el("div", { id: "cardBody" });
+    card.appendChild(holder);
+
+    if (c.type === "mc") buildMC(c, holder);
+    else if (c.type === "label") buildLabel(c, holder);
+    else if (c.type === "multi") buildMulti(c, holder);
+    else if (c.type === "discuss") buildDiscuss(c, holder);
+    else if (c.type === "toolkit") buildToolkit(c, holder);
+    else buildOpen(c, holder);
+
+    if (c.type !== "discuss" && c.type !== "toolkit") {
+      var tools = el("div", { class: "row", id: "tools" });
+      var rb = el("button", { class: "ghost", id: "rewindBtn", text: "🔄 Rewind", onclick: function () { useRewind(c); } });
+      var hb = el("button", { class: "ghost", id: "hintBtn", text: "⚖️ Ask the Moneychanger", onclick: function () { useHint(c); } });
+      if (state.rewindUsed && state.rewindUsed !== c.id) rb.disabled = true;
+      if (state.hintUsed) hb.disabled = true;
+      tools.appendChild(rb); tools.appendChild(hb);
+      card.appendChild(tools);
+      card.appendChild(el("div", { id: "toolOut" }));
+    }
+
+    stage.appendChild(card);
+    if (state.hintShown[c.id]) showHintBox(c);
+    window.scrollTo(0, 0);
+  }
+
+  function isLast() { return state.idx >= CARDS.length - 1; }
+  function nextBtn(label) {
+    return el("button", { class: "primary", id: "nextBtn", text: label || (isLast() ? "See the results ▶" : "Next card ▶"), onclick: function () { state.idx += 1; renderCard(); } });
+  }
+  function evidenceBox(c, holder) {
+    if (c.evidence) holder.appendChild(el("div", { class: "evidence", text: c.evidence }));
+    if (c.passage) {
+      var box = el("div", { class: "evidence passage" });
+      c.passage.forEach(function (p) {
+        box.appendChild(p.hl ? el("mark", { class: "hl", text: p.t }) : el("span", { text: p.t }));
+      });
+      holder.appendChild(box);
+      var key = el("p", { class: "meta" });
+      key.appendChild(el("span", { text: "Plain text = evidence (keep it). " }));
+      key.appendChild(el("mark", { class: "hl", text: c.passageKey || "Highlighted = analysis to rewrite." }));
+      holder.appendChild(key);
+    }
+  }
+  function refresherBox(c, holder) {
+    if (!c.refresher) return;
+    var det = el("details", { class: "refresher", open: "" });
+    det.appendChild(el("summary", { text: c.refresherTitle || "📚 Refresher (tap to open or close)" }));
+    var ul = el("ul");
+    c.refresher.forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+    det.appendChild(ul);
+    holder.appendChild(det);
+  }
+
+  // ---------- Multiple choice ----------
+  function buildMC(c, holder) {
+    evidenceBox(c, holder);
+    var list = el("div", { id: "opts" });
+    c.options.forEach(function (o, i) {
+      list.appendChild(el("button", { class: "opt", text: o, onclick: function () { pickMC(c, i); } }));
+    });
+    holder.appendChild(list);
+    holder.appendChild(el("div", { id: "mcOut" }));
+    if (state.answered[c.id]) restoreMC(c);
+  }
+  function pickMC(c, i) {
+    if (state.answered[c.id]) return;
+    state.answered[c.id] = true;
+    state.mcPick[c.id] = i;
+    state.pts[c.id] = (i === c.correct) ? c.max : 0;
+    updateHud();
+    restoreMC(c);
+  }
+  function restoreMC(c) {
+    var pick = state.mcPick[c.id];
+    document.querySelectorAll("#opts .opt").forEach(function (b, i) {
+      b.disabled = true; b.style.opacity = "1";
+      if (i === c.correct) b.classList.add("right");
+      else if (i === pick) b.classList.add("wrong");
+    });
+    var out = document.getElementById("mcOut");
+    out.textContent = "";
+    var ok = pick === c.correct;
+    out.appendChild(el("div", { class: "feedback " + (ok ? "good" : "bad"), text: (ok ? "✅ Correct! +" + c.max + " 🪙. " : "❌ Not quite. ") + c.explain }));
+    out.appendChild(el("div", { class: "row" }, [nextBtn()]));
+  }
+
+  // ---------- Multi-select ----------
+  function buildMulti(c, holder) {
+    var picks = state.multiPick[c.id] = state.multiPick[c.id] || [];
+    holder.appendChild(el("p", { class: "meta", text: "Pick exactly " + c.pick + "." }));
+    var list = el("div", { id: "opts" });
+    var btns = [];
+    c.options.forEach(function (o, i) {
+      var b = el("button", { class: "opt", text: o, "aria-pressed": "false", onclick: function () {
+        if (state.answered[c.id]) return;
+        var k = picks.indexOf(i);
+        if (k >= 0) picks.splice(k, 1);
+        else if (picks.length < c.pick) picks.push(i);
+        refresh();
+      } });
+      btns.push(b); list.appendChild(b);
+    });
+    holder.appendChild(list);
+    var chk = el("button", { class: "primary", text: "Check my picks", onclick: function () { checkMulti(c, btns, picks); } });
+    holder.appendChild(el("div", { class: "row", id: "multiCheckRow" }, [chk]));
+    holder.appendChild(el("div", { id: "multiOut" }));
+    function refresh() {
+      btns.forEach(function (b, i) {
+        var on = picks.indexOf(i) >= 0;
+        b.classList.toggle("sel", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      chk.disabled = picks.length !== c.pick;
+    }
+    refresh();
+    if (state.answered[c.id]) checkMulti(c, btns, picks);
+  }
+  function checkMulti(c, btns, picks) {
+    var score = 0;
+    picks.forEach(function (i) { if (c.correct.indexOf(i) >= 0) score++; });
+    btns.forEach(function (b, i) {
+      b.disabled = true; b.classList.remove("sel"); b.style.opacity = "1";
+      if (c.correct.indexOf(i) >= 0) b.classList.add("right");
+      else if (picks.indexOf(i) >= 0) b.classList.add("wrong");
+    });
+    state.answered[c.id] = true;
+    state.pts[c.id] = score;
+    updateHud();
+    var cr = document.getElementById("multiCheckRow"); if (cr) cr.hidden = true;
+    var out = document.getElementById("multiOut");
+    out.textContent = "";
+    out.appendChild(el("div", { class: "feedback " + (score === c.max ? "good" : "bad"), text: (score === c.max ? "✅ All three! " : "You found " + score + " of " + c.max + ". ") + c.explain }));
+    out.appendChild(el("div", { class: "row" }, [nextBtn()]));
+  }
+
+  // ---------- Label / sort ----------
+  function buildLabel(c, holder) {
+    var picks = state.labPick[c.id] = state.labPick[c.id] || [];
+    evidenceBox(c, holder);
+    refresherBox(c, holder);
+    var rows = [];
+    c.sentences.forEach(function (s, i) {
+      var row = el("div", { class: "sent" });
+      row.appendChild(el("p", { text: (i + 1) + ". " + s.text }));
+      var bw = el("div", { class: "labbtns" });
+      var btns = [];
+      c.choices.forEach(function (ch, j) {
+        var b = el("button", { text: ch, "aria-pressed": "false", onclick: function () {
+          if (state.answered[c.id]) return;
+          picks[i] = j; refresh();
+        } });
+        btns.push(b); bw.appendChild(b);
+      });
+      row.appendChild(bw);
+      rows.push(btns);
+      holder.appendChild(row);
+    });
+    var chk = el("button", { class: "primary", text: "Check my answers", onclick: function () { checkLabels(c, rows, picks); } });
+    holder.appendChild(el("div", { class: "row", id: "checkRow" }, [chk]));
+    holder.appendChild(el("div", { id: "labOut" }));
+    function picked() { var n = 0; for (var k = 0; k < c.sentences.length; k++) if (picks[k] !== undefined) n++; return n; }
+    function refresh() {
+      rows.forEach(function (btns, i) {
+        btns.forEach(function (b, j) {
+          var on = picks[i] === j;
+          b.classList.toggle("sel", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      });
+      chk.disabled = picked() < c.sentences.length;
+    }
+    refresh();
+    if (state.answered[c.id]) checkLabels(c, rows, picks);
+  }
+  function checkLabels(c, rows, picks) {
+    var score = 0;
+    rows.forEach(function (btns, i) {
+      var good = c.sentences[i].correct;
+      if (picks[i] === good) score++;
+      btns.forEach(function (b, j) {
+        b.disabled = true; b.classList.remove("sel");
+        if (j === good) b.classList.add("right");
+        else if (j === picks[i]) b.classList.add("wrong");
+      });
+    });
+    state.answered[c.id] = true;
+    state.pts[c.id] = score;
+    updateHud();
+    var cr = document.getElementById("checkRow"); if (cr) cr.hidden = true;
+    var out = document.getElementById("labOut");
+    out.textContent = "";
+    out.appendChild(el("div", { class: "feedback " + (score === c.max ? "good" : "bad"), text: (score === c.max ? "✅ Perfect! " : "You got " + score + " of " + c.max + ". ") + c.explain }));
+    out.appendChild(el("div", { class: "row" }, [nextBtn()]));
+  }
+
+  // ---------- Discussion (Socratic ladder, no coins) ----------
+  function buildDiscuss(c, holder) {
+    var ta = el("textarea", { id: "answerBox", placeholder: "Type your thinking here…", "aria-label": "Your thinking" });
+    ta.value = state.texts[c.id] || "";
+    holder.appendChild(ta);
+
+    var nb = nextBtn(isLast() ? "See the results ▶" : "Next question ▶");
+    function gate() { if (c.required) nb.disabled = (state.texts[c.id] || "").trim().length < 5; }
+    ta.addEventListener("input", function () { state.texts[c.id] = ta.value; gate(); });
+
+    var fbox = el("div", { class: "followup" }, [
+      el("strong", { text: "🗣️ Mr. Johnson might ask: " }),
+      el("span", { text: c.followup })
+    ]);
+    fbox.hidden = !state.followShown[c.id];
+    var fbtn = el("button", { class: "ghost", text: "🗣️ Show a follow-up question", onclick: function () {
+      state.followShown[c.id] = true; fbox.hidden = false; fbtn.hidden = true;
+    } });
+    fbtn.hidden = !!state.followShown[c.id];
+
+    var btnRow = el("div", { class: "row" }, [fbtn]);
+    var mbox = null;
+    if (c.master) {
+      mbox = el("div", { class: "master" }, [el("strong", { text: "💡 One strong answer" }), el("p", { text: c.master })]);
+      mbox.hidden = !state.answered[c.id];
+      var mbtn = el("button", { class: "ghost", text: "💡 Compare with a strong answer", onclick: function () {
+        state.answered[c.id] = true; mbox.hidden = false; mbtn.hidden = true;
+      } });
+      mbtn.hidden = !!state.answered[c.id];
+      btnRow.appendChild(mbtn);
+    }
+    holder.appendChild(btnRow);
+    holder.appendChild(fbox);
+    if (mbox) holder.appendChild(mbox);
+    if (c.required) holder.appendChild(el("p", { class: "meta", text: "Type your sentence to unlock the next card." }));
+    holder.appendChild(el("div", { class: "row" }, [nb]));
+    gate();
+  }
+
+  // ---------- Toolkit reference graphic ----------
+  function buildToolkit(c, holder) {
+    holder.appendChild(el("div", { class: "tk-purpose" }, [
+      el("strong", { text: "What this is for: " }),
+      el("span", { text: "Keep this open while we look at a paragraph you’ve already written and edit it together. Work down the list one piece at a time, and ask each question about your own paragraph." })
+    ]));
+    var list = el("div", { class: "tk-list" });
+    c.rows.forEach(function (r) {
+      var row = el("div", { class: "tk-row", style: "--tk:" + r.color });
+      row.appendChild(el("div", { class: "tk-letter", text: r.letter, "aria-hidden": "true" }));
+      var body = el("div", { class: "tk-body" });
+      body.appendChild(el("h3", { text: r.name }));
+      body.appendChild(el("p", { class: "tk-ask" }, [el("strong", { text: "Ask: " }), el("span", { text: r.ask })]));
+      if (r.ladder) {
+        var lad = el("div", { class: "tk-ladder" });
+        r.ladder.forEach(function (s, i) {
+          lad.appendChild(el("div", { class: "tk-step tk-step" + i }, [el("strong", { text: s[0] }), el("span", { text: s[1] })]));
+        });
+        body.appendChild(lad);
+      }
+      if (r.chips) {
+        var ch = el("div", { class: "tk-chips" });
+        r.chips.forEach(function (g) {
+          ch.appendChild(el("span", { class: "tk-chip" }, [el("strong", { text: g[0] + ": " }), el("span", { text: g[1] })]));
+        });
+        body.appendChild(ch);
+      }
+      if (r.tip) body.appendChild(el("p", { class: "tk-tip", text: r.tip }));
+      row.appendChild(body);
+      list.appendChild(row);
+    });
+    holder.appendChild(list);
+    holder.appendChild(el("div", { class: "tk-test" }, [el("strong", { text: "🔍 The cover-up test: " }), el("span", { text: c.test })]));
+    holder.appendChild(el("div", { class: "row" }, [
+      el("button", { text: "🖨️ Print this toolkit", onclick: function () { window.print(); } }),
+      nextBtn("Backup: write a new paragraph ▶")
+    ]));
+  }
+  function toolkitIndex() {
+    for (var i = 0; i < CARDS.length; i++) if (CARDS[i].type === "toolkit") return i;
+    return CARDS.length - 1;
+  }
+
+  // ---------- Open response ----------
+  function buildOpen(c, holder) {
+    evidenceBox(c, holder);
+    refresherBox(c, holder);
+    if (c.givenTopic) {
+      holder.appendChild(el("div", { class: "carry" }, [
+        el("strong", { text: "Topic sentence: " }),
+        el("span", { text: c.givenTopic })
+      ]));
+    }
+    if (c.items) {
+      holder.appendChild(el("p", { class: "meta", text: "Checklist:" }));
+      var ul = el("ul", { class: "checklist" });
+      c.items.forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+      holder.appendChild(ul);
+    }
+    var ta = el("textarea", { id: "answerBox", placeholder: "Type your answer here…", "aria-label": "Your answer" });
+    if (c.givenTopic && !state.texts[c.id]) state.texts[c.id] = c.givenTopic + " ";
+    ta.value = state.texts[c.id] || "";
+    if (c.items) ta.style.minHeight = "180px";
+    holder.appendChild(ta);
+    var sub = el("button", { class: "primary", id: "submitBtn", text: "Submit my answer", onclick: function () { submitOpen(c); } });
+    function minLen() { return c.givenTopic ? c.givenTopic.length + 20 : 5; }
+    sub.disabled = ta.value.trim().length < minLen();
+    ta.addEventListener("input", function () { state.texts[c.id] = ta.value; sub.disabled = ta.value.trim().length < minLen(); });
+    holder.appendChild(el("div", { class: "row", id: "submitRow" }, [sub]));
+    holder.appendChild(el("div", { id: "afterSubmit" }));
+    if (state.submitted[c.id]) revealMaster(c);
+  }
+  function submitOpen(c) {
+    var ta = document.getElementById("answerBox");
+    if (!ta || ta.value.trim().length < 5) return;
+    state.texts[c.id] = ta.value;
+    state.submitted[c.id] = true;
+    revealMaster(c);
+  }
+  function revealMaster(c) {
+    var ta = document.getElementById("answerBox"); if (ta) ta.readOnly = true;
+    var row = document.getElementById("submitRow"); if (row) row.hidden = true;
+    var after = document.getElementById("afterSubmit");
+    after.textContent = "";
+    after.appendChild(el("div", { class: "master" }, [
+      el("strong", { text: "🗝️ Master answer" }),
+      el("p", { text: c.master }),
+      el("p", { class: "meta", text: "Compare it with your answer. You don’t need the same words, just the same big ideas." })
+    ]));
+    after.appendChild(buildScoreBox(c));
+  }
+  function buildScoreBox(c) {
+    var box = el("div", { class: "scorebox" });
+    box.appendChild(el("p", { text: "Mr. Johnson awards coins (0 to " + c.max + "):" }));
+    var btns = el("div", { class: "scorebtns" });
+    var current = state.pts.hasOwnProperty(c.id) ? state.pts[c.id] : null;
+    for (var p = 0; p <= c.max; p++) {
+      (function (p) {
+        var b = el("button", { text: String(p), "aria-label": p + " coins", onclick: function () { setScore(c, p); } });
+        if (current === p) b.classList.add("sel");
+        btns.appendChild(b);
+      })(p);
+    }
+    box.appendChild(btns);
+    var labels = c.labels || LABELS3;
+    var lab = el("div", { class: "scorelabels" });
+    lab.appendChild(el("span", { text: labels[0] }));
+    lab.appendChild(el("span", { text: labels[labels.length - 1] }));
+    box.appendChild(lab);
+    var n = nextBtn();
+    n.disabled = (current === null);
+    box.appendChild(el("div", { class: "row" }, [n]));
+    return box;
+  }
+  function setScore(c, p) {
+    state.pts[c.id] = p;
+    updateHud();
+    document.querySelectorAll(".scorebtns button").forEach(function (b, i) { b.classList.toggle("sel", i === p); });
+    var n = document.getElementById("nextBtn"); if (n) n.disabled = false;
+  }
+
+  // ---------- Power-ups ----------
+  function useHint(c) {
+    if (state.hintUsed) return;
+    state.hintUsed = c.id;
+    state.hintShown[c.id] = true;
+    showHintBox(c);
+    updateHud();
+  }
+  function showHintBox(c) {
+    var out = document.getElementById("toolOut");
+    if (!out || document.getElementById("hintBox")) return;
+    out.appendChild(el("div", { class: "hintbox", id: "hintBox" }, [
+      el("strong", { text: "⚖️ The Moneychanger leans in: " }),
+      el("span", { text: c.hint || "Look back at the examples Harari uses." })
+    ]));
+    var hb = document.getElementById("hintBtn"); if (hb) hb.disabled = true;
+  }
+  function clearTimer() { if (state.timer) { clearInterval(state.timer); state.timer = null; } }
+  function useRewind(c) {
+    if (state.rewindUsed && state.rewindUsed !== c.id) return;
+    state.rewindUsed = c.id;
+    updateHud();
+    var rb = document.getElementById("rewindBtn"); if (rb) rb.disabled = true;
+    var out = document.getElementById("toolOut");
+    var old = document.getElementById("rewindBox"); if (old) old.remove();
+    var t = el("div", { class: "timer", text: "20" });
+    out.insertBefore(el("div", { class: "hintbox", id: "rewindBox" }, [
+      el("strong", { text: "🔄 Rewind! Flip back through your book and look for the answer." }), t
+    ]), out.firstChild);
+    var left = 20;
+    clearTimer();
+    state.timer = setInterval(function () {
+      left -= 1;
+      t.textContent = left > 0 ? String(left) : "Time’s up!";
+      if (left <= 0) clearTimer();
+    }, 1000);
+  }
+
+  // ---------- Final ----------
+  function showFinal() {
+    clearTimer();
+    topbar.hidden = false; progWrap.hidden = false;
+    progBar.style.width = "100%";
+    updateHud();
+    stage.textContent = "";
+
+    var total = totalPoints();
+    var pct = total / MAX_MAIN;
+    var rank, msg;
+    if (pct >= 0.9) { rank = "👑 Master of the Mint"; msg = "Outstanding. You understand what money really is, and you can build a paragraph that proves it."; }
+    else if (pct >= 0.7) { rank = "🏛️ Royal Moneychanger"; msg = "Strong work. You’re following Harari’s argument and sharpening your writing tools."; }
+    else if (pct >= 0.5) { rank = "⚖️ Market Trader"; msg = "Good trading! You have the main ideas. A little more practice with analysis will make your paragraphs shine."; }
+    else { rank = "🌾 Barterer"; msg = "You’re still trading apples for shoes, and that’s fine. Let’s work through the tricky parts together."; }
+
+    var tbody = el("tbody");
+    Object.keys(LEVEL_INFO).forEach(function (lv) {
+      var got = 0, max = 0;
+      CARDS.forEach(function (c) { if (String(c.level) === lv) { max += (c.max || 0); got += (state.pts[c.id] || 0); } });
+      if (max === 0) return;
+      tbody.appendChild(el("tr", null, [el("td", { text: LEVEL_INFO[lv].name }), el("td", { text: got + " / " + max })]));
+    });
+    var table = el("table", null, [
+      el("thead", null, [el("tr", null, [el("th", { text: "Round" }), el("th", { text: "Coins" })])]),
+      tbody
+    ]);
+
+    var used = [
+      state.rewindUsed ? "🔄 Rewind used on card " + state.rewindUsed : "🔄 Rewind not used",
+      state.hintUsed ? "⚖️ Ask the Moneychanger used on card " + state.hintUsed : "⚖️ Ask the Moneychanger not used"
+    ];
+
+    var card = el("section", { class: "card" }, [
+      el("div", { class: "badge", text: "Market closed" }),
+      el("h2", { text: "Final Results" }),
+      el("div", { class: "final-score", text: total + " 🪙" }),
+      el("p", { class: "meta", style: "text-align:center", text: "out of " + MAX_MAIN }),
+      el("div", { class: "rank", text: rank }),
+      el("p", { class: "prompt", text: msg }),
+      el("div", { class: "scroll" }, [table]),
+      el("p", { class: "meta", text: used.join(" · ") })
+    ]);
+    var p1 = (state.texts.P1 || "").trim();
+    if (p1) {
+      card.appendChild(el("div", { class: "carry" }, [el("strong", { text: "Your paragraph: " }), el("span", { text: p1 })]));
+    }
+    card.appendChild(el("div", { class: "row" }, [
+      el("button", { class: "primary", text: "📋 Back to the toolkit", onclick: function () { state.idx = toolkitIndex(); renderCard(); } }),
+      el("button", { text: "↺ Play again", onclick: showIntro })
+    ]));
+    stage.appendChild(card);
+    window.scrollTo(0, 0);
+  }
+
+  showIntro();
+})();
+</script>
+</body>
+</html>

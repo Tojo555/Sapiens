@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sapiens Quest: The Pyramid Quest</title>
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #faf6ec;
+    --surface: #ffffff;
+    --surface-2: #f3ecd8;
+    --text: #2a2418;
+    --muted: #6b6250;
+    --border: #e0d5b8;
+    --accent: #b8731a;
+    --accent-ink: #ffffff;
+    --good: #2f7d4f;
+    --good-bg: #e3f3e9;
+    --bad: #b3402f;
+    --bad-bg: #fbe7e3;
+    --hint-bg: #fff3cf;
+    --shadow: 0 2px 10px rgba(80, 60, 20, 0.12);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16130d;
+      --surface: #211c13;
+      --surface-2: #2c2518;
+      --text: #f2ead6;
+      --muted: #b3a88c;
+      --border: #3d3422;
+      --accent: #e0a040;
+      --accent-ink: #1b1508;
+      --good: #6fd197;
+      --good-bg: #17301f;
+      --bad: #f08a78;
+      --bad-bg: #3a1c17;
+      --hint-bg: #3a3014;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16130d; --surface: #211c13; --surface-2: #2c2518; --text: #f2ead6;
+    --muted: #b3a88c; --border: #3d3422; --accent: #e0a040; --accent-ink: #1b1508;
+    --good: #6fd197; --good-bg: #17301f; --bad: #f08a78; --bad-bg: #3a1c17;
+    --hint-bg: #3a3014; --shadow: 0 2px 10px rgba(0, 0, 0, 0.5); color-scheme: dark;
+  }
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; min-height: 100%; background: var(--bg); color: var(--text);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    line-height: 1.5; font-size: 17px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 14px 16px 40px; }
+  .stamp { text-align: right; font-size: 12.5px; font-style: italic; color: var(--muted); margin: 0 0 6px; }
+  h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; margin: 0; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 0 14px; flex-wrap: wrap; }
+  .score-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: 15px; box-shadow: var(--shadow); }
+  .powerups { display: flex; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .progress { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border); }
+  .progress > div { height: 100%; width: 0; background: var(--accent); transition: width 0.4s ease; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); }
+  .badge { display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .card h2 { font-size: 25px; margin-bottom: 8px; }
+  .prompt { font-size: 18px; margin: 10px 0 14px; }
+  .meta { font-size: 14px; color: var(--muted); }
+  .hero { text-align: center; padding: 8px 0 4px; }
+  .hero .emoji { font-size: 54px; }
+  .hero h1 { font-size: 34px; margin: 6px 0; }
+  .rules { text-align: left; background: var(--surface-2); border-radius: 12px; padding: 12px 16px; margin: 16px 0; font-size: 15.5px; }
+  .rules ul { margin: 6px 0 0; padding-left: 20px; }
+  button { font: inherit; cursor: pointer; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 10px 14px; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+  button.ghost { background: transparent; }
+  .opt { display: block; width: 100%; text-align: left; margin: 8px 0; padding: 12px 14px; }
+  .opt:hover:not(:disabled) { border-color: var(--accent); }
+  .opt.right { background: var(--good-bg); border-color: var(--good); color: var(--text); }
+  .opt.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--text); }
+  textarea { width: 100%; box-sizing: border-box; min-height: 92px; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; resize: vertical; }
+  textarea:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  label.field { display: block; font-weight: 700; font-size: 14.5px; margin: 12px 0 4px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .hintbox { background: var(--hint-bg); border-left: 5px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-top: 12px; font-size: 15.5px; }
+  .feedback { margin-top: 10px; padding: 10px 12px; border-radius: 10px; font-size: 15.5px; }
+  .feedback.good { background: var(--good-bg); }
+  .feedback.bad { background: var(--bad-bg); }
+  .scorebox { margin-top: 16px; padding: 12px; border: 2px dashed var(--border); border-radius: 12px; }
+  .scorebox p { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+  .scorebtns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scorebtns button { min-width: 48px; font-weight: 700; }
+  .scorebtns button.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .scorelabels { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .master { margin-top: 14px; background: var(--good-bg); border-left: 5px solid var(--good); border-radius: 8px; padding: 10px 14px; }
+  .master p { margin: 6px 0 0; font-size: 16px; }
+  .refresher { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin: 0 0 14px; font-size: 15.5px; }
+  .refresher summary { cursor: pointer; font-weight: 700; }
+  .refresher ul { margin: 8px 0 2px; padding-left: 20px; }
+  .refresher li { margin: 4px 0; }
+  .timer { font-size: 44px; font-weight: 800; text-align: center; color: var(--accent); }
+  .final-score { font-size: 56px; font-weight: 800; text-align: center; color: var(--accent); margin: 4px 0; }
+  .rank { text-align: center; font-family: Georgia, serif; font-size: 24px; margin-bottom: 10px; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; margin: 10px 0; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sent { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin: 10px 0; background: var(--bg); }
+  .sent p { margin: 0 0 8px; font-size: 16.5px; }
+  .labbtns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .labbtns button { padding: 6px 10px; font-size: 14px; }
+  .labbtns button.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+  .labbtns button.right { background: var(--good-bg); border-color: var(--good); color: var(--text); font-weight: 700; opacity: 1; }
+  .labbtns button.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--text); opacity: 1; }
+  .opt.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+  .foot { margin-top: 22px; font-size: 12.5px; color: var(--muted); text-align: center; }
+  @media (max-width: 480px) {
+    body { font-size: 16px; }
+    .hero h1 { font-size: 28px; }
+    .card { padding: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .progress > div { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="stamp">Prepared with AI support, reviewed by Mr. Johnson</p>
+  <div class="topbar" id="topbar" hidden>
+    <div class="score-pill" id="scorePill">⭐ 0 pts</div>
+    <div class="powerups" id="powerStatus"></div>
+  </div>
+  <div class="progress" id="progressWrap" hidden><div id="progressBar"></div></div>
+  <main id="stage" aria-live="polite"></main>
+  <p class="foot">Sapiens Quest · Chapter 6, “Building Pyramids” · A reading diagnostic game</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Content ----------
+  var LABELS2 = ["Not yet", "Getting there", "Nailed it"];
+  var CHOICES = ["Topic sentence", "Evidence", "Analysis", "Merging sentence"];
+  var DEFS = [
+    "Topic sentence: states the claim the whole paragraph will argue.",
+    "Evidence: a specific example or fact that supports the claim.",
+    "Analysis: explains HOW or WHY the evidence supports the claim.",
+    "Merging sentence: pulls the evidence and analysis together and ties them back to the claim."
+  ];
+  var PARA = [
+    "Harari argues that large societies hold together because their members share an imagined order, not because of any law of nature.",
+    "For example, the Code of Hammurabi said people were born into a ranking of superior people, commoners and slaves, while the Declaration of Independence said all men are created equal.",
+    "Even though the two documents disagree completely, both claim to describe eternal truths, which shows that each order is a human-made belief that people simply treat as natural.",
+    "So whether it is ancient Babylon or the modern United States, millions of strangers can cooperate only because they share a belief that exists in their imaginations."
+  ];
+  var CARDS = [
+    // Level 1: warm-up
+    { id: "1A", level: 1, type: "mc", max: 1,
+      title: "Card 1A · The Two Documents",
+      prompt: "Harari sets two famous documents side by side to make a point about how societies work. Which two?",
+      options: ["The Bible and the Constitution", "The Code of Hammurabi and the Declaration of Independence", "The Magna Carta and the Code of Hammurabi", "The Declaration of Independence and the Ten Commandments"],
+      correct: 1,
+      explain: "Hammurabi’s Code (Babylon, around 1776 BC) says people are born into a ranking. The Declaration of Independence (1776 AD) says all men are created equal. Harari’s twist is that both are imagined orders.",
+      hint: "One is from ancient Babylon. The other is from American history, and it has the same year in its date." },
+    { id: "1B", level: 1, type: "mc", max: 1,
+      title: "Card 1B · Name the Glue",
+      prompt: "Which choice best describes what Harari means by an “imagined order”?",
+      options: ["A lie that rulers invent to trick people", "A law of nature, like gravity", "A set of shared beliefs that lets huge numbers of strangers cooperate", "A dream that only one person has"],
+      correct: 2,
+      explain: "An imagined order is a shared belief system (laws, ranks, rights, gods). It isn’t a trick, and it isn’t part of nature. It exists because people believe in it together.",
+      hint: "Harari says it isn’t a trick, and it isn’t part of nature either." },
+
+    // Level 2: the climb (easier to harder)
+    { id: "2A", level: 2, type: "mc", max: 1,
+      title: "Step 1 of 5 · The Ranking",
+      prompt: "What kind of society did Hammurabi’s Code describe?",
+      options: ["One where everyone was equal", "One where people were divided into ranked groups, like superiors, commoners and slaves", "One where only kings had to follow the law", "One with no laws at all"],
+      correct: 1,
+      explain: "Hammurabi’s Code treated people as born into different ranks, and punishments depended on a person’s rank.",
+      hint: "Think about the word “hierarchy.”" },
+    { id: "2B", level: 2, type: "mc", max: 1,
+      title: "Step 2 of 5 · Real Because We Believe",
+      prompt: "Which of these exists mainly because millions of people believe in it together?",
+      options: ["A mountain", "The value of a dollar", "A tree", "Radioactivity"],
+      correct: 1,
+      explain: "A dollar is just paper (or numbers on a screen). It has value only because millions of people agree that it does. Harari calls this kind of shared reality “intersubjective.”",
+      hint: "Which one would stop being worth anything if everyone stopped believing in it?" },
+    { id: "2C", level: 2, type: "mc", max: 1,
+      title: "Step 3 of 5 · More Than Muscle",
+      prompt: "Harari says violence alone can’t keep an imagined order going. What else does an order need?",
+      options: ["Higher taxes", "True believers, especially among the soldiers and officials who enforce it", "More written laws", "A bigger army than any neighbor"],
+      correct: 1,
+      explain: "If the soldiers and officials stopped believing in the order, a small group of rulers could not control millions of people. Belief is what holds the order up.",
+      hint: "Who is holding the weapons, and what has to be true of them?" },
+    { id: "2D", level: 2, type: "mc", max: 1,
+      title: "Step 4 of 5 · Rewriting the Declaration",
+      prompt: "Harari rewrites “all men are created equal” in the language of biology. What does his version show?",
+      options: ["Genes prove that all humans are equal", "Humans evolved, and they evolved with differences, so “equality” isn’t a fact of biology", "Equality is a lie that everyone should stop believing in", "Biology supports Hammurabi’s ranking of people"],
+      correct: 1,
+      explain: "In biological terms, humans weren’t “created,” they evolved, and they didn’t evolve equal. So Harari says equality is an imagined order, just like Hammurabi’s ranking. He does NOT say we should stop believing in it.",
+      hint: "Watch out for the answers that say too much. Harari says equality isn’t biological, but he doesn’t say it’s bad." },
+    { id: "2E", level: 2, type: "mc", max: 1,
+      title: "Step 5 of 5 · The Prison Yard",
+      prompt: "Harari says it’s very hard to escape an imagined order. According to him, what does “escaping” one usually mean?",
+      options: ["Returning to nature, where there are no shared myths", "Finally seeing objective reality with no beliefs at all", "Stepping into a different imagined order", "Ending all cooperation between people"],
+      correct: 2,
+      explain: "To change an order, people need to cooperate, and large-scale cooperation itself needs a shared imagined order. So escaping one usually means moving into another, like moving from one prison cell into a bigger prison yard.",
+      hint: "Think about what it takes for millions of people to cooperate on a change." },
+
+    // Level 3: written
+    { id: "3A", level: 3, type: "open", max: 2,
+      title: "Card 3 · Building Pyramids",
+      prompt: "This was your homework question: What does Harari mean by “building pyramids”? Tell it the way you’d explain it to a friend.",
+      hint: "Could one person build a pyramid alone? So what did it take, and what got all those people to do it?",
+      master: "Pyramids stand for huge projects that only happen when thousands of strangers cooperate. Nobody can build one alone, and Harari says force alone isn’t enough. The builders and the elites shared an imagined order, with beliefs about pharaohs, gods and the afterlife. Those beliefs even shaped what the rich wanted: they poured their wealth into tombs, the way people today pour theirs into things like shopping and vacations. So “building pyramids” points to Harari’s big idea: shared beliefs are what let large societies do large things.",
+      labels: LABELS2 },
+
+    // Level 4: Prison Walls
+    { id: "W1", level: 4, type: "multi", max: 3, pick: 3,
+      title: "Prison Walls · Card 1 · The Three Walls",
+      prompt: "Harari says an imagined order is protected by invisible “walls” that keep us from noticing it’s imagined. Which THREE of these are the ways the walls are reinforced? Pick exactly three, then check.",
+      options: [
+        "Scientists prove the order is part of nature",
+        "It is built into the physical world around us, like buildings and everyday objects",
+        "People are born knowing the rules by instinct",
+        "It shapes what people want, so we dream the dreams the order teaches us",
+        "Each person secretly invents their own private rules",
+        "It exists in the shared beliefs of millions of people, not just one mind"
+      ],
+      correct: [1, 3, 5],
+      explain: "The three walls are: (1) the order is embedded in the material world, (2) it shapes our desires, and (3) it is intersubjective, meaning it lives in the shared minds of millions. The other three choices aren’t in Harari’s argument.",
+      hint: "Think about three places a belief could hide: in the things around you, in what you want, and in what everyone else believes." },
+
+    { id: "W2", level: 4, type: "open", max: 2,
+      title: "Prison Walls · Card 2 · Wall 1: The Material World",
+      prompt: "Harari points out that the ideal modern house is divided into many small rooms. Why did he bring this up? How does this example show an imagined order being built into the material world?",
+      hint: "Think about your own home or your own room. What does it say about how our society sees each person?",
+      master: "The modern ideal of individualism is an imagined order: it says each person is a unique individual who needs privacy and a space of their own. That belief gets built into walls and doors, with a separate room for each child. Because we grow up living inside houses like that, the belief stops feeling like an idea and starts feeling like plain reality. Nobody has to argue for individualism; the building does it quietly every day. (In many times and places, families lived and slept together in shared spaces.)",
+      labels: LABELS2 },
+
+    { id: "W4", level: 4, type: "open", max: 2,
+      title: "Prison Walls · Card 3 · Wall 2: Our Desires",
+      prompt: "Rich ancient Egyptians spent their fortunes on huge tombs and pyramids. Many people today dream of a vacation abroad. Why do you think people in these two societies wanted such different things?",
+      hint: "Think about what each society taught people to dream about.",
+      master: "Each society’s shared beliefs taught people what the best life looks like. The Egyptians believed the afterlife mattered most, so the rich wanted grand tombs. Today’s beliefs, which Harari calls romanticism (have as many experiences as you can) and consumerism (buy things to be happy), teach us to want things like vacations abroad. The wants feel personal, but they came from the beliefs around us. That is how an imagined order shapes our desires, and why we rarely notice it.",
+      labels: LABELS2 },
+
+    { id: "W6", level: 4, type: "open", max: 2,
+      title: "Prison Walls · Card 4 · Wall 3: Shared by Millions",
+      prompt: "Harari calls imagined orders “intersubjective,” meaning they exist in the shared beliefs of many people. Use the dollar (or any example): why can’t one person just decide to stop believing and escape the order?",
+      hint: "Think about something you can’t change by yourself, like what money is worth. Why not?",
+      master: "Because the order doesn’t live in one person’s head; it lives in the shared beliefs of millions of people and the ways they communicate. If you stop believing in the dollar, a store still won’t take your imaginary payment, so nothing changes. It isn’t objective (real whether or not anyone believes) and it isn’t just subjective (one mind). To change an intersubjective order, millions of people have to change their minds together, which is very hard, and that is part of why the wall holds.",
+      labels: LABELS2 },
+
+    // Level 5: Three Kinds of Real
+    { id: "R1", level: 5, type: "label", max: 4,
+      title: "Three Kinds of Real · Card 1 · Sort the Statements",
+      prompt: "Some things are real in different ways. Tap a label for each statement, then check your answers.",
+      refresherTitle: "📚 Three kinds of real (tap to open or close)",
+      refresher: [
+        "Objective: true whether or not anyone believes in it (it would exist even if every human disappeared).",
+        "Subjective: exists only in one person’s mind, like a personal opinion or feeling.",
+        "Intersubjective: exists because many people share a belief or agreement, so it can’t be changed by one person alone."
+      ],
+      choices: ["Objective", "Subjective", "Intersubjective"],
+      sentences: [
+        { text: "Water boils at 100°C at sea level.", correct: 0 },
+        { text: "Pineapple on pizza tastes great.", correct: 1 },
+        { text: "A dollar bill is worth one dollar.", correct: 2 },
+        { text: "A country and its borders.", correct: 2 }
+      ],
+      explain: "Boiling water is objective: it works the same whether or not anyone believes in it. Liking pineapple on pizza is subjective: it’s one person’s opinion. The value of a dollar and a country’s borders are intersubjective: they exist because millions of people agree on them.",
+      hint: "Try three tests: Would it still be true if every human disappeared? If just one person changed their mind? If millions changed their minds together?" },
+
+    { id: "R1B", level: 5, type: "label", max: 4,
+      title: "Three Kinds of Real · Card 2 · Harder Ones",
+      prompt: "Four more, and these are a little trickier. Tap a label for each statement, then check your answers.",
+      refresherTitle: "📚 Three kinds of real (tap to open or close)",
+      refresher: [
+        "Objective: true whether or not anyone believes in it (it would exist even if every human disappeared).",
+        "Subjective: exists only in one person’s mind, like a personal opinion, feeling or private belief.",
+        "Intersubjective: exists because many people share a belief or agreement, so it can’t be changed by one person alone."
+      ],
+      choices: ["Objective", "Subjective", "Intersubjective"],
+      sentences: [
+        { text: "A student getting an “A” in a class.", correct: 2 },
+        { text: "The Moon orbits the Earth.", correct: 0 },
+        { text: "A company like Nike owning property and being sued in court.", correct: 2 },
+        { text: "Believing that your lucky socks help your team win.", correct: 1 }
+      ],
+      explain: "An “A” looks like a plain fact, but it only means something because a school and its students agree on the grading system, so it’s intersubjective. The Moon’s orbit is objective. A company owning property and being sued is intersubjective: it’s a legal fiction, like Peugeot in Chapter 2. A belief that only you hold, like the lucky socks, is subjective. If everyone shared that belief, it would become intersubjective.",
+      hint: "Try the three tests: Would it still be true if every human disappeared? If just one person changed their mind? If millions changed their minds together?" },
+
+    { id: "R2", level: 5, type: "mc", max: 1,
+      title: "Three Kinds of Real · Card 3 · Making the Connection",
+      prompt: "In Chapter 2, Harari talked about “shared fictions” like money, nations and gods. In Chapter 6, he talks about “imagined orders.” Which statement best connects the two?",
+      options: [
+        "They are opposites: shared fictions are lies, and imagined orders are facts",
+        "An imagined order is built from shared fictions that many people believe at once, so it exists intersubjectively",
+        "Shared fictions are objective, while imagined orders are subjective",
+        "Shared fictions only matter in small groups, and imagined orders only matter to rulers"
+      ],
+      correct: 1,
+      explain: "Shared fictions are the building blocks. An imagined order (rules, ranks, rights) is made of shared fictions that many people believe at once. Both are intersubjective: not objective facts of nature, and not just one person’s opinion.",
+      hint: "Think about what Chapter 2’s stories (money, nations, gods) have in common with Chapter 6’s ranks and rights." },
+
+    // Level 6: Setting up the next reading (no points)
+    { id: "S1", level: 6, type: "think", max: 0,
+      title: "Looking Ahead · Card 1 · Why Trust Paper?",
+      prompt: "Your next reading is “The Scent of Money.” Before you read, think about this: a dollar bill is just a piece of paper, yet strangers will trade real things for it. What do you think makes people trust it? Talk it over with Mr. Johnson. There are no points on these cards.",
+      hint: "Think about what you’d have to believe for a piece of paper to buy you lunch.",
+      master: "I accept the paper because I’m confident the next person will accept it too. The paper has no value on its own, but everyone treats it as valuable, so it works. The trust is shared: I trust the store, the store trusts the bank, and laws and governments back the system up. If people stopped trusting it, it would just be paper again." },
+
+    { id: "S2", level: 6, type: "think", max: 0,
+      title: "Looking Ahead · Card 2 · Trading Without Money",
+      prompt: "Imagine there were no money at all. You and a friend each own things the other might want, and you want to trade. What problems might come up?",
+      hint: "Think about trading cards or game items. What if the other person doesn’t have what you want? How would you agree on what each thing is worth?",
+      master: "You might not have what your friend wants, and your friend might not have what you want. Even if you both do, it’s hard to agree on fair values: how many trading cards is a video game worth? Trading things directly without money is called barter, and it gets complicated fast, especially with strangers. Keep thinking about what would make trading easier." },
+
+    { id: "S3", level: 6, type: "think", max: 0,
+      title: "Looking Ahead · Card 3 · Fiction, Order, or Both?",
+      prompt: "Using what you know from Chapters 2 and 6: is money a shared fiction, an imagined order, or both? How do you know?",
+      hint: "Look back at the three kinds of real. Which kind is money? Then ask whether money works alone or as part of something bigger.",
+      master: "Both. Money is a shared fiction from Chapter 2: it isn’t an objective fact of nature, and it isn’t just one person’s opinion. It’s intersubjective, because millions of people believe in it together. It’s also part of bigger imagined orders, like an economy with its prices, banks and laws, which all depend on the same shared beliefs." },
+
+    { id: "S4", level: 6, type: "think", max: 0,
+      title: "Looking Ahead · Write These Down",
+      prompt: "Before you read “The Scent of Money,” write these down in your notes or in your book, and bring them to your next session:",
+      items: [
+        "One sentence: why do you think strangers trust money? (Use your thinking from today.)",
+        "In your own words: what does “intersubjective” mean?",
+        "The word “barter” and what it means.",
+        "One question you hope the chapter will answer."
+      ] },
+  ];
+
+  var LEVEL_INFO = {
+    1: { name: "Level 1 · Foundation Stones", sub: "Warm-up" },
+    2: { name: "Level 2 · Climb the Steps", sub: "Easier to Harder" },
+    3: { name: "Level 3 · Raise the Walls", sub: "Comprehension Check" },
+    4: { name: "Level 4 · The Prison Walls", sub: "Section Reinforcement" },
+    5: { name: "Level 5 · Three Kinds of Real", sub: "Objective, Subjective, Intersubjective" },
+    6: { name: "Looking Ahead · The Scent of Money", sub: "Setting Up the Next Reading" }
+  };
+
+  var MAX_MAIN = 27;
+  var BONUS_MAX = 2;
+
+  // ---------- State ----------
+  var state;
+  function freshState() {
+    return { idx: -1, pts: {}, answered: {}, submitted: {}, rewindUsed: null, hintUsed: null, hintShown: {}, mcPick: {}, labPick: {}, multiPick: {}, texts: {}, timer: null, includeBonus: false };
+  }
+  state = freshState();
+
+  var stage = document.getElementById("stage");
+  var topbar = document.getElementById("topbar");
+  var progWrap = document.getElementById("progressWrap");
+  var progBar = document.getElementById("progressBar");
+  var scorePill = document.getElementById("scorePill");
+  var powerStatus = document.getElementById("powerStatus");
+
+  function el(tag, attrs, children) {
+    var n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") n.className = attrs[k];
+      else if (k === "text") n.textContent = attrs[k];
+      else if (k.indexOf("on") === 0) n.addEventListener(k.slice(2), attrs[k]);
+      else n.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) n.appendChild(c); });
+    return n;
+  }
+
+  function totalPoints() {
+    var t = 0;
+    Object.keys(state.pts).forEach(function (k) { t += state.pts[k]; });
+    return t;
+  }
+
+  function activeCards() {
+    return CARDS.filter(function (c) { return !c.bonus || state.includeBonus; });
+  }
+
+  function updateHud() {
+    scorePill.textContent = "⭐ " + totalPoints() + " pts";
+    powerStatus.textContent = "";
+    var r = el("span", { text: (state.rewindUsed ? "🔄 Rewind used" : "🔄 Rewind ready") });
+    var h = el("span", { text: (state.hintUsed ? "📜 Ask the Scribe used" : "📜 Ask the Scribe ready") });
+    powerStatus.appendChild(r);
+    powerStatus.appendChild(h);
+    var cards = activeCards();
+    var done = Math.max(0, state.idx);
+    progBar.style.width = Math.min(100, Math.round((done / cards.length) * 100)) + "%";
+  }
+
+  // ---------- Screens ----------
+  function showIntro() {
+    clearTimer();
+    state = freshState();
+    topbar.hidden = true; progWrap.hidden = true;
+    stage.textContent = "";
+    var rules = el("div", { class: "rules" }, [
+      el("strong", { text: "How the game works" }),
+      (function () {
+        var ul = el("ul");
+        [
+          "Five scored rounds: Foundation Stones, Climb the Steps (five multiple-choice questions that get harder), Raise the Walls, the Prison Walls, and Three Kinds of Real. A final Looking Ahead round has no points and sets up your next reading.",
+          "Multiple-choice cards check themselves.",
+          "For the written cards, type your answer and press Submit. A master answer will appear so you can compare, and then Mr. Johnson awards the points.",
+          "You get two one-time power-ups: 🔄 Rewind (20 seconds to look back in your book) and 📜 Ask the Scribe (a small hint).",
+          "There’s no penalty for using a power-up. They just help show where the trickiest ideas are."
+        ].forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+        return ul;
+      })()
+    ]);
+    var card = el("section", { class: "card" }, [
+      el("div", { class: "hero" }, [
+        el("div", { class: "emoji", text: "🏺", "aria-hidden": "true" }),
+        el("h1", { text: "The Pyramid Quest" }),
+        el("p", { class: "meta", text: "Sapiens Chapter 6: “Building Pyramids”" })
+      ]),
+      el("p", { class: "prompt", text: "Welcome, builder! Pharaoh needs someone who really understands what holds a pyramid together. Your mission: show what Harari means by “building pyramids,” and prove you can take a paragraph apart like a pro." }),
+      rules,
+      el("div", { class: "row" }, [
+        el("button", { class: "primary", text: "Start building ▶", onclick: function () { state.idx = 0; renderCard(); } })
+      ])
+    ]);
+    stage.appendChild(card);
+    window.scrollTo(0, 0);
+  }
+
+  function renderCard() {
+    clearTimer();
+    var cards = activeCards();
+    if (state.idx >= cards.length) { showFinal(); return; }
+    var c = cards[state.idx];
+    topbar.hidden = false; progWrap.hidden = false;
+    updateHud();
+    stage.textContent = "";
+
+    var info = LEVEL_INFO[c.level];
+    var card = el("section", { class: "card" }, [
+      el("div", { class: "badge", text: info.name + " · " + info.sub }),
+      el("h2", { text: c.title }),
+      el("p", { class: "prompt", text: c.prompt })
+    ]);
+
+    var holder = el("div", { id: "cardBody" });
+    card.appendChild(holder);
+
+    if (c.type === "mc") buildMC(c, holder);
+    else if (c.type === "label") buildLabel(c, holder);
+    else if (c.type === "multi") buildMulti(c, holder);
+    else if (c.type === "think") buildThink(c, holder);
+    else buildOpen(c, holder);
+
+    var tools = el("div", { class: "row", id: "tools" });
+    var rb = el("button", { class: "ghost", id: "rewindBtn", text: "🔄 Rewind", onclick: function () { useRewind(c); } });
+    var hb = el("button", { class: "ghost", id: "hintBtn", text: "📜 Ask the Scribe", onclick: function () { useHint(c); } });
+    if (state.rewindUsed && state.rewindUsed !== c.id) rb.disabled = true;
+    if (state.hintUsed && state.hintUsed !== c.id) hb.disabled = true;
+    tools.appendChild(rb); tools.appendChild(hb);
+    card.appendChild(tools);
+    card.appendChild(el("div", { id: "toolOut" }));
+
+    stage.appendChild(card);
+    if (state.hintShown[c.id]) showHintBox(c);
+    window.scrollTo(0, 0);
+  }
+
+  function nextBtn(label) {
+    return el("button", { class: "primary", id: "nextBtn", text: label || "Next card ▶", onclick: function () { state.idx += 1; renderCard(); } });
+  }
+
+  // Multiple choice
+  function buildMC(c, holder) {
+    var list = el("div", { id: "opts" });
+    c.options.forEach(function (o, i) {
+      var b = el("button", { class: "opt", text: o, onclick: function () { pickMC(c, i); } });
+      list.appendChild(b);
+    });
+    holder.appendChild(list);
+    holder.appendChild(el("div", { id: "mcOut" }));
+    if (state.answered[c.id]) restoreMC(c);
+  }
+  function pickMC(c, i) {
+    if (state.answered[c.id]) return;
+    state.answered[c.id] = true;
+    state.mcPick[c.id] = i;
+    state.pts[c.id] = (i === c.correct) ? c.max : 0;
+    updateHud();
+    restoreMC(c);
+  }
+  function restoreMC(c) {
+    var btns = document.querySelectorAll("#opts .opt");
+    var pick = state.mcPick[c.id];
+    btns.forEach(function (b, i) {
+      b.disabled = true;
+      if (i === c.correct) b.classList.add("right");
+      else if (i === pick) b.classList.add("wrong");
+      b.style.opacity = "1";
+    });
+    var out = document.getElementById("mcOut");
+    out.textContent = "";
+    var ok = pick === c.correct;
+    out.appendChild(el("div", { class: "feedback " + (ok ? "good" : "bad"), text: (ok ? "✅ Correct! +1. " : "❌ Not quite. ") + c.explain }));
+    var r = el("div", { class: "row" }, [nextBtn()]);
+    out.appendChild(r);
+  }
+
+  // Discussion card (no points)
+  function buildThink(c, holder) {
+    if (c.items) {
+      var ul = el("ul");
+      c.items.forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+      holder.appendChild(ul);
+    }
+    if (c.master) {
+      var box = el("div", { class: "feedback good", id: "masterBox", text: "💡 Model answer: " + c.master });
+      box.hidden = !state.answered[c.id];
+      var rv = el("button", { class: "ghost", text: "💡 Show a model answer", onclick: function () {
+        state.answered[c.id] = true; box.hidden = false; rv.hidden = true;
+      } });
+      rv.hidden = !box.hidden;
+      holder.appendChild(el("div", { class: "row" }, [rv]));
+      holder.appendChild(box);
+    }
+    var isLast = state.idx >= activeCards().length - 1;
+    holder.appendChild(el("div", { class: "row" }, [nextBtn(isLast ? "See the results ▶" : "Next ▶")]));
+  }
+
+  // Multi-select card
+  function buildMulti(c, holder) {
+    var picks = state.multiPick[c.id] = state.multiPick[c.id] || [];
+    holder.appendChild(el("p", { class: "meta", text: "Pick exactly " + c.pick + "." }));
+    var list = el("div", { id: "opts" });
+    var btns = [];
+    c.options.forEach(function (o, i) {
+      var b = el("button", { class: "opt", text: o, "aria-pressed": "false", onclick: function () {
+        if (state.answered[c.id]) return;
+        var k = picks.indexOf(i);
+        if (k >= 0) picks.splice(k, 1);
+        else if (picks.length < c.pick) picks.push(i);
+        refresh();
+      } });
+      btns.push(b); list.appendChild(b);
+    });
+    holder.appendChild(list);
+    var chk = el("button", { class: "primary", text: "Check my picks", onclick: function () { checkMulti(c, btns, picks); } });
+    var chkRow = el("div", { class: "row", id: "multiCheckRow" }, [chk]);
+    holder.appendChild(chkRow);
+    holder.appendChild(el("div", { id: "multiOut" }));
+    function refresh() {
+      btns.forEach(function (b, i) {
+        var on = picks.indexOf(i) >= 0;
+        b.classList.toggle("sel", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      chk.disabled = picks.length !== c.pick;
+    }
+    refresh();
+    if (state.answered[c.id]) checkMulti(c, btns, picks);
+  }
+  function checkMulti(c, btns, picks) {
+    var score = 0;
+    picks.forEach(function (i) { if (c.correct.indexOf(i) >= 0) score++; });
+    btns.forEach(function (b, i) {
+      b.disabled = true;
+      b.classList.remove("sel");
+      b.style.opacity = "1";
+      if (c.correct.indexOf(i) >= 0) b.classList.add("right");
+      else if (picks.indexOf(i) >= 0) b.classList.add("wrong");
+    });
+    state.answered[c.id] = true;
+    state.pts[c.id] = score;
+    updateHud();
+    var cr = document.getElementById("multiCheckRow");
+    if (cr) cr.hidden = true;
+    var out = document.getElementById("multiOut");
+    out.textContent = "";
+    out.appendChild(el("div", { class: "feedback " + (score === c.max ? "good" : "bad"), text: (score === c.max ? "✅ All three! " : "You found " + score + " of " + c.max + ". ") + c.explain }));
+    out.appendChild(el("div", { class: "row" }, [nextBtn()]));
+  }
+
+  // Paragraph labeler
+  function buildLabel(c, holder) {
+    var picks = state.labPick[c.id] = state.labPick[c.id] || [];
+    var det = el("details", { class: "refresher", open: "" });
+    det.appendChild(el("summary", { text: c.refresherTitle }));
+    var ul = el("ul");
+    c.refresher.forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+    det.appendChild(ul);
+    holder.appendChild(det);
+
+    var rows = [];
+    c.sentences.forEach(function (s, i) {
+      var row = el("div", { class: "sent" });
+      row.appendChild(el("p", { text: (i + 1) + ". " + s.text }));
+      var bw = el("div", { class: "labbtns" });
+      var btns = [];
+      c.choices.forEach(function (ch, j) {
+        var b = el("button", { text: ch, "aria-pressed": "false", onclick: function () {
+          if (state.answered[c.id]) return;
+          picks[i] = j; refresh();
+        } });
+        btns.push(b); bw.appendChild(b);
+      });
+      row.appendChild(bw);
+      rows.push(btns);
+      holder.appendChild(row);
+    });
+
+    var out = el("div", { id: "labOut" });
+    var chk = el("button", { class: "primary", id: "checkBtn", text: "Check my labels", onclick: function () { checkLabels(c, rows, picks); } });
+    var chkRow = el("div", { class: "row", id: "checkRow" }, [chk]);
+    holder.appendChild(chkRow);
+    holder.appendChild(out);
+
+    function picked() { var n = 0; for (var k = 0; k < c.sentences.length; k++) if (picks[k] !== undefined) n++; return n; }
+    function refresh() {
+      rows.forEach(function (btns, i) {
+        btns.forEach(function (b, j) {
+          var on = picks[i] === j;
+          b.classList.toggle("sel", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      });
+      chk.disabled = picked() < c.sentences.length;
+    }
+    refresh();
+    if (state.answered[c.id]) checkLabels(c, rows, picks);
+  }
+  function checkLabels(c, rows, picks) {
+    var score = 0;
+    rows.forEach(function (btns, i) {
+      var good = c.sentences[i].correct;
+      if (picks[i] === good) score++;
+      btns.forEach(function (b, j) {
+        b.disabled = true;
+        b.classList.remove("sel");
+        if (j === good) b.classList.add("right");
+        else if (j === picks[i]) b.classList.add("wrong");
+      });
+    });
+    state.answered[c.id] = true;
+    state.pts[c.id] = score;
+    updateHud();
+    var cr = document.getElementById("checkRow");
+    if (cr) cr.hidden = true;
+    var out = document.getElementById("labOut");
+    out.textContent = "";
+    out.appendChild(el("div", { class: "feedback " + (score === c.max ? "good" : "bad"), text: (score === c.max ? "✅ Perfect! " : "You got " + score + " of " + c.max + ". ") + c.explain }));
+    out.appendChild(el("div", { class: "row" }, [nextBtn()]));
+  }
+
+  // Open response: type, submit, see master answer, tutor scores
+  function buildOpen(c, holder) {
+    if (c.refresher) {
+      var det = el("details", { class: "refresher", open: "" });
+      det.appendChild(el("summary", { text: c.refresherTitle || "📚 Refresher (tap to open or close)" }));
+      var ul = el("ul");
+      c.refresher.forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+      det.appendChild(ul);
+      holder.appendChild(det);
+    }
+    var ta = el("textarea", { id: "answerBox", placeholder: "Type your answer here…", "aria-label": "Your answer" });
+    ta.value = state.texts[c.id] || "";
+    holder.appendChild(ta);
+    var after = el("div", { id: "afterSubmit" });
+    var sub = el("button", { class: "primary", id: "submitBtn", text: "Submit my answer", onclick: function () { submitOpen(c); } });
+    var row = el("div", { class: "row", id: "submitRow" }, [sub]);
+    sub.disabled = (ta.value.trim().length < 5) && !state.submitted[c.id];
+    ta.addEventListener("input", function () {
+      state.texts[c.id] = ta.value;
+      sub.disabled = ta.value.trim().length < 5;
+    });
+    holder.appendChild(row);
+    holder.appendChild(after);
+    if (state.submitted[c.id]) revealMaster(c);
+  }
+
+  function submitOpen(c) {
+    var ta = document.getElementById("answerBox");
+    if (!ta || ta.value.trim().length < 5) return;
+    state.texts[c.id] = ta.value;
+    state.submitted[c.id] = true;
+    revealMaster(c);
+  }
+
+  function revealMaster(c) {
+    var ta = document.getElementById("answerBox");
+    if (ta) ta.readOnly = true;
+    var row = document.getElementById("submitRow");
+    if (row) row.hidden = true;
+    var after = document.getElementById("afterSubmit");
+    after.textContent = "";
+    after.appendChild(el("div", { class: "master" }, [
+      el("strong", { text: "🗝️ Master answer" }),
+      el("p", { text: c.master }),
+      el("p", { class: "meta", text: "Compare it with your answer. You don’t need the same words, just the same big ideas." })
+    ]));
+    after.appendChild(buildScoreBox(c));
+  }
+
+  function buildScoreBox(c) {
+    var box = el("div", { class: "scorebox" });
+    box.appendChild(el("p", { text: c.bonus ? "Mr. Johnson awards bonus points (0 to " + c.max + "):" : "Mr. Johnson awards points (0 to " + c.max + "):" }));
+    var btns = el("div", { class: "scorebtns" });
+    var current = state.pts.hasOwnProperty(c.id) ? state.pts[c.id] : null;
+    for (var p = 0; p <= c.max; p++) {
+      (function (p) {
+        var b = el("button", { text: String(p), "aria-label": p + " points", onclick: function () { setScore(c, p); } });
+        if (current === p) b.classList.add("sel");
+        btns.appendChild(b);
+      })(p);
+    }
+    box.appendChild(btns);
+    var lab = el("div", { class: "scorelabels" });
+    lab.appendChild(el("span", { text: c.labels[0] }));
+    lab.appendChild(el("span", { text: c.labels[c.labels.length - 1] }));
+    box.appendChild(lab);
+    var row = el("div", { class: "row" }, [
+      (function () {
+        var n = nextBtn(c.bonus ? "See the results ▶" : "Next ▶");
+        n.disabled = (current === null);
+        return n;
+      })()
+    ]);
+    box.appendChild(row);
+    return box;
+  }
+
+  function setScore(c, p) {
+    state.pts[c.id] = p;
+    updateHud();
+    var btns = document.querySelectorAll(".scorebtns button");
+    btns.forEach(function (b, i) { b.classList.toggle("sel", i === p); });
+    var n = document.getElementById("nextBtn");
+    if (n) n.disabled = false;
+  }
+
+  // Power-ups
+  function useHint(c) {
+    if (state.hintUsed && state.hintUsed !== c.id) return;
+    state.hintUsed = c.id;
+    state.hintShown[c.id] = true;
+    showHintBox(c);
+    updateHud();
+    var hb = document.getElementById("hintBtn");
+    if (hb) hb.disabled = true;
+  }
+  function showHintBox(c) {
+    var out = document.getElementById("toolOut");
+    var existing = document.getElementById("hintBox");
+    if (existing) return;
+    var box = el("div", { class: "hintbox", id: "hintBox" }, [
+      el("strong", { text: "📜 The Scribe whispers: " }),
+      el("span", { text: c.hint })
+    ]);
+    out.appendChild(box);
+    var hb = document.getElementById("hintBtn");
+    if (hb) hb.disabled = true;
+  }
+
+  function clearTimer() { if (state.timer) { clearInterval(state.timer); state.timer = null; } }
+
+  function useRewind(c) {
+    if (state.rewindUsed && state.rewindUsed !== c.id) return;
+    state.rewindUsed = c.id;
+    updateHud();
+    var rb = document.getElementById("rewindBtn");
+    if (rb) rb.disabled = true;
+    var out = document.getElementById("toolOut");
+    var old = document.getElementById("rewindBox");
+    if (old) old.remove();
+    var t = el("div", { class: "timer", id: "rewindTime", text: "20" });
+    var box = el("div", { class: "hintbox", id: "rewindBox" }, [
+      el("strong", { text: "🔄 Rewind! Flip back through your book and look for the answer." }),
+      t
+    ]);
+    out.insertBefore(box, out.firstChild);
+    var left = 20;
+    clearTimer();
+    state.timer = setInterval(function () {
+      left -= 1;
+      t.textContent = left > 0 ? String(left) : "Time’s up!";
+      if (left <= 0) clearTimer();
+    }, 1000);
+  }
+
+  // ---------- Final ----------
+  function showFinal() {
+    clearTimer();
+    topbar.hidden = false; progWrap.hidden = false;
+    progBar.style.width = "100%";
+    updateHud();
+    stage.textContent = "";
+
+    var total = totalPoints();
+    var mainTotal = 0;
+    CARDS.forEach(function (c) { if (!c.bonus && state.pts[c.id]) mainTotal += state.pts[c.id]; });
+    var pct = mainTotal / MAX_MAIN;
+    var rank, msg;
+    if (pct >= 0.9) { rank = "👑 Pharaoh of Ideas"; msg = "The pyramid is complete, and in style. You handled the facts, the big idea, and the paragraph analysis."; }
+    else if (pct >= 0.7) { rank = "🏛️ Royal Scribe"; msg = "Strong work. You’re following Harari’s argument and reading paragraphs closely."; }
+    else if (pct >= 0.5) { rank = "🧱 Master Builder"; msg = "You’ve laid the main stones. A few more to place, and the pyramid will stand."; }
+    else { rank = "🪨 Stone-Hauler"; msg = "The pyramid is still going up! That just means there’s more to build. Let’s work on it together."; }
+
+    var perLevel = [1, 2, 3, 4, 5].map(function (lv) {
+      var got = 0, max = 0;
+      CARDS.forEach(function (c) { if (c.level === lv) { max += c.max; got += (state.pts[c.id] || 0); } });
+      return [LEVEL_INFO[lv].name, got, max];
+    });
+
+    var tbody = el("tbody");
+    perLevel.forEach(function (r) {
+      tbody.appendChild(el("tr", null, [el("td", { text: r[0] }), el("td", { text: r[1] + " / " + r[2] })]));
+    });
+    if (state.includeBonus) {
+      tbody.appendChild(el("tr", null, [el("td", { text: "Bonus Portal" }), el("td", { text: (state.pts.BONUS || 0) + " / " + BONUS_MAX })]));
+    }
+    var table = el("table", null, [
+      el("thead", null, [el("tr", null, [el("th", { text: "Round" }), el("th", { text: "Points" })])]),
+      tbody
+    ]);
+
+    var used = [];
+    used.push(state.rewindUsed ? "🔄 Rewind used on card " + state.rewindUsed : "🔄 Rewind not used");
+    used.push(state.hintUsed ? "📜 Ask the Scribe used on card " + state.hintUsed : "📜 Ask the Scribe not used");
+
+    var card = el("section", { class: "card" }, [
+      el("div", { class: "badge", text: "Pyramid complete" }),
+      el("h2", { text: "Final Results" }),
+      el("div", { class: "final-score", text: total + " pts" }),
+      el("div", { class: "rank", text: rank }),
+      el("p", { class: "prompt", text: msg }),
+      el("div", { class: "scroll" }, [table]),
+      el("p", { class: "meta", text: used.join(" · ") }),
+      el("div", { class: "hintbox" }, [el("strong", { text: "📖 Up next: " }), el("span", { text: "Open your book to the paragraph you chose for homework. Find its topic sentence, evidence and analysis, and decide how well its last sentence works as a merging sentence." })]),
+      el("div", { class: "row" }, [])
+    ]);
+    var row = card.lastChild;
+    row.appendChild(el("button", { class: "primary", text: "↺ Play again", onclick: showIntro }));
+    stage.appendChild(card);
+    window.scrollTo(0, 0);
+  }
+
+  showIntro();
+})();
+</script>
+</body>
+</html>

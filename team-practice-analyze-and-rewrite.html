@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TEAM Practice: Analyze and Rewrite</title>
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #fbfaf7; --surface: #ffffff; --text: #1f2430; --muted: #5b6272; --border: #d9d6cc;
+    --accent: #2f5d9e; --accent-text: #ffffff;
+    --ok-bg: #e3f3e1; --ok-border: #4f9a4a; --bad-bg: #fbe6e1; --bad-border: #c4533f;
+    --note-bg: #fff6d9; --note-border: #d8b84a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171a21; --surface: #20242d; --text: #eceef3; --muted: #a2a9b8; --border: #3a4050;
+      --accent: #7ba7e6; --accent-text: #11151c;
+      --ok-bg: #1f3a21; --ok-border: #5fb35a; --bad-bg: #432019; --bad-border: #e0745f;
+      --note-bg: #3b3318; --note-border: #b89b3a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171a21; --surface: #20242d; --text: #eceef3; --muted: #a2a9b8; --border: #3a4050;
+    --accent: #7ba7e6; --accent-text: #11151c;
+    --ok-bg: #1f3a21; --ok-border: #5fb35a; --bad-bg: #432019; --bad-border: #e0745f;
+    --note-bg: #3b3318; --note-border: #b89b3a;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; font-size: 17px; }
+  main { max-width: 820px; margin: 0 auto; padding: 20px 18px 60px; }
+  .stamp { text-align: right; font-style: italic; font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+  h1 { font-size: 26px; line-height: 1.25; margin: 6px 0 10px; }
+  h2 { font-size: 21px; margin: 0 0 6px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); font-size: 15px; }
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin: 20px 0; }
+  .namebar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0 4px; }
+  input[type="text"], textarea, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; max-width: 100%; box-sizing: border-box; }
+  textarea { width: 100%; min-height: 84px; resize: vertical; }
+  button { font: inherit; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-text); border-radius: 8px; padding: 9px 16px; cursor: pointer; }
+  button.secondary { background: transparent; color: var(--accent); }
+  button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin: 10px 0 14px; }
+  .legend div { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 14px; }
+  .row { padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin: 12px 0; background: var(--bg); }
+  .row .sent { margin-bottom: 8px; }
+  .row .sent .n { font-weight: 700; color: var(--accent); margin-right: 6px; }
+  .step { margin-top: 8px; padding: 8px 10px; border: 2px solid var(--border); border-radius: 8px; }
+  .step label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+  .step select { width: 100%; }
+  .step.ok { background: var(--ok-bg); border-color: var(--ok-border); }
+  .step.bad { background: var(--bad-bg); border-color: var(--bad-border); }
+  .msg { font-size: 14px; margin-top: 6px; display: none; }
+  .step.ok .msg, .step.bad .msg { display: block; }
+  .stage2 { display: none; }
+  .stage2.open { display: block; }
+  .stage-title { font-weight: 700; margin: 16px 0 4px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+  .score { font-weight: 600; }
+  details { margin: 12px 0; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; background: var(--bg); }
+  summary { cursor: pointer; font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 15px; }
+  th, td { border: 1px solid var(--border); padding: 7px 9px; text-align: left; vertical-align: top; }
+  th { background: var(--surface); width: 34%; }
+  .fixbox { margin: 16px 0; }
+  .fixbox .orig { background: var(--bg); border-left: 4px solid var(--bad-border); padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; }
+  .fixbox label { font-weight: 600; display: block; margin-bottom: 6px; }
+  .scan { font-size: 14px; margin-top: 6px; color: var(--muted); min-height: 1.2em; }
+  .scan b { color: var(--text); }
+  .note { background: var(--note-bg); border: 1px solid var(--note-border); border-radius: 10px; padding: 10px 14px; font-size: 15px; }
+  .cutline { display: flex !important; gap: 10px; align-items: center; font-weight: 600; }
+  .cutline input { width: 20px; height: 20px; }
+  .orign { background: var(--bg); border-left: 4px solid var(--accent); padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; }
+  .pagenav { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); justify-content: space-between; }
+  .paragraph-out { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; white-space: pre-wrap; }
+  @media print { .actions button, .namebar button { display: none; } body { background: #fff; color: #000; } section { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="stamp">Prepared with AI support, reviewed by Mr. Johnson</p>
+  <h1>TEAM Practice: Analyze and Rewrite</h1>
+  <div class="namebar">
+    <label for="name">Name:</label>
+    <input type="text" id="name" autocomplete="off" aria-label="Your name">
+  </div>
+
+  <p class="muted">The parts of a TEAM paragraph:</p>
+  <div class="legend">
+    <div><b>T</b> Topic sentence: states the claim and previews the evidence</div>
+    <div><b>E</b> Evidence</div>
+    <div><b>A</b> Analysis: explains WHY the evidence supports the claim</div>
+    <div><b>M</b> Merging: sums up the idea and glides into what’s next</div>
+  </div>
+
+  <details>
+    <summary>Open the phrase bank (signal phrases and transitions)</summary>
+    <table>
+      <tr><th>Signal phrases (introduce evidence)</th><td>According to ___, … | In ___, X explains that … | X reports that … | As ___ points out, … | X argues that …</td></tr>
+      <tr><th>Analysis starters (explain evidence)</th><td>This matters because … | This shows that … | In other words, … | This suggests that … | What this means is …</td></tr>
+      <tr><th>Transitions: add</th><td>Also, … | In addition, … | Another reason is … | Furthermore, …</td></tr>
+      <tr><th>Transitions: contrast</th><td>However, … | On the other hand, … | Even so, … | Although …, …</td></tr>
+      <tr><th>Transitions: cause and result</th><td>Because of this, … | As a result, … | Therefore, …</td></tr>
+      <tr><th>Merging: sum up + glide</th><td>So while …, … | Taken together, … | All of this leads to a bigger question: … | This raises the next issue: …</td></tr>
+    </table>
+  </details>
+
+  <div id="app"></div>
+</main>
+
+<script>
+(function () {
+  /* ---------- shared option lists ---------- */
+  var JOB_OPTIONS = [
+    { v: '', t: 'Choose one…' },
+    { v: 'T', t: 'T: a topic sentence (states the claim)' },
+    { v: 'E', t: 'E: evidence' },
+    { v: 'A', t: 'A: analysis (explains why)' },
+    { v: 'M', t: 'M: merging (sums up and glides on)' }
+  ];
+  var QUAL_OPTIONS = [
+    { v: '', t: 'Choose one…' },
+    { v: 'works', t: 'It works: it does its job well' },
+    { v: 'weakT', t: 'Weak topic sentence: vague, does not preview the evidence' },
+    { v: 'fake', t: 'Fake analysis: it only repeats the evidence' },
+    { v: 'off', t: 'Off-topic: a fact that does not support the claim' },
+    { v: 'drop', t: 'Dropped in: evidence with no signal phrase or transition' },
+    { v: 'weakM', t: 'Weak merging: sums up but does not glide on' }
+  ];
+  var JOB_HINT = 'Look again at what this sentence is trying to do: state a claim, give a fact, explain a fact, or wrap up and move on?';
+  var QUAL_HINT = {
+    works: 'Look again: could this sentence be improved, or is it already doing its job?',
+    weakT: 'Look again: does this sentence preview the evidence the paragraph will use, or is it vague?',
+    fake: 'Look again: does this sentence explain anything new, or just say the evidence a second time?',
+    off: 'Look again: is this fact interesting, and does it help prove the claim?',
+    drop: 'Look again: does anything introduce this evidence or connect it to what came before?',
+    weakM: 'Look again: does this sentence do both jobs of an M: sum up AND glide forward?'
+  };
+
+  /* ---------- the two paragraphs ----------
+     Items are listed in the SCRAMBLED order students see.
+     pos = where the sentence belongs in the finished paragraph.
+     fix = what the student rewrites in the Rewrite part. */
+  var SETS = {
+    b: {
+      title: 'Version A',
+      next: 'The next paragraph in this essay will be about island animals, such as the giant birds of New Zealand, that disappeared after people arrived.',
+      nextWords: ['island', 'new zealand', 'bird', 'elsewhere', 'other places'],
+      topic: 'Question: Were humans or climate change the main reason the giant animals (megafauna) disappeared?',
+      items: [
+        { id: 'b4', s: 'Some giant animals, like Diprotodon, were as big as a rhinoceros.', job: 'E', jobWhy: 'It is a fact offered as evidence.', q: 'off', qWhy: 'Interesting, but it says nothing about why the animals vanished.', pos: 4,
+          fix: { kind: 'cut', prompt: 'What should happen to this sentence?' } },
+        { id: 'b2', s: 'According to historian Yuval Noah Harari, 23 of Australia’s 24 kinds of animals weighing over 50 kilograms vanished after humans arrived (Sapiens).', job: 'E', jobWhy: 'A specific fact with a number and a source.', q: 'works', qWhy: 'Specific, sourced, and introduced with a signal phrase.', pos: 1 },
+        { id: 'b6', s: 'That is why humans were the main reason the megafauna disappeared.', job: 'M', jobWhy: 'It is a wrap-up sentence.', q: 'weakM', qWhy: 'It restates the claim but does not glide into the next paragraph.', pos: 5,
+          fix: { kind: 'merge', prompt: 'Write a new M: sum up the idea AND glide into the next paragraph.' } },
+        { id: 'b1', s: 'Humans, not climate change, were the main reason the megafauna disappeared because the evidence suggests that the animals vanished soon after people arrived and megafauna in addition to the fact that the animals had survived earlier episodes ice ages and global warmings.', job: 'T', jobWhy: 'It states the claim the whole paragraph will defend.', q: 'works', qWhy: 'Clear, debatable, and it previews both pieces of evidence the paragraph uses.', pos: 0 },
+        { id: 'b5', s: 'Woolly mammoths survived several earlier warm periods (Sapiens).', job: 'E', jobWhy: 'A fact from a source offered as evidence.', q: 'drop', qWhy: 'No signal phrase, no transition, and no explanation of why it matters.', pos: 3,
+          fix: { kind: 'transSignal', prompt: 'Rewrite this sentence with a transition and a signal phrase.' } },
+        { id: 'b3', s: 'This shows that 23 out of 24 kinds of large animals in Australia vanished after humans arrived.', job: 'A', jobWhy: 'It starts like analysis (“This shows that…”): it is trying to explain the evidence.', q: 'fake', qWhy: 'It repeats the evidence instead of explaining it.', pos: 2,
+          fix: { kind: 'analysis', prompt: 'Write real analysis. Explain WHY the evidence matters to the claim.' } }
+      ]
+    },
+    c: {
+      title: 'Version B',
+      topic: 'Question: Why can Sapiens cooperate in huge groups when other animals cannot?',
+      next: 'The next paragraph in this essay will be about how money lets strangers trade with each other.',
+      nextWords: ['money', 'trade', 'strangers', 'buy', 'sell'],
+      items: [
+        { id: 'c6', s: 'In other words, a company only works because millions of strangers all agree to believe in it, and a chimpanzee cannot be talked into believing in something it cannot see.', job: 'A', jobWhy: '“In other words…” explains what the facts mean.', q: 'works', qWhy: 'It explains the evidence and connects it to the claim.', pos: 5 },
+        { id: 'c4', s: 'Harari was born in Israel in 1976.', job: 'E', jobWhy: 'A fact offered as evidence.', q: 'off', qWhy: 'True, but it says nothing about why Sapiens can cooperate in huge groups.', pos: 3 },
+        { id: 'c7', s: 'So while intelligence helped Sapiens in many ways, shared fictions are what let strangers work together, and money is one of the clearest examples of such a fiction.', job: 'M', jobWhy: 'It wraps up the idea and points to what comes next.', q: 'works', qWhy: 'It sums up the idea AND glides into the next paragraph about money.', pos: 6 },
+        { id: 'c2', s: 'According to Harari, the French company Peugeot can own property, borrow money, and be sued, even though nobody can point to it as a physical thing (Sapiens).', job: 'E', jobWhy: 'A specific fact from the book offered as evidence.', q: 'works', qWhy: 'Specific, sourced, and introduced with a signal phrase.', pos: 1 },
+        { id: 'c1', s: 'Harari has some interesting ideas about why Sapiens are different.', job: 'T', jobWhy: 'It is trying to state the claim.', q: 'weakT', qWhy: 'It is vague, makes no claim anyone could argue with, and does not preview any evidence.', pos: 0 },
+        { id: 'c5', s: 'Chimpanzees cannot cooperate flexibly in large groups (Sapiens).', job: 'E', jobWhy: 'A fact from the book offered as evidence.', q: 'drop', qWhy: 'No signal phrase, no transition, and no explanation of why it matters.', pos: 4 },
+        { id: 'c3', s: 'This shows that Peugeot can own property, borrow money, and be sued.', job: 'A', jobWhy: 'It starts like analysis (“This shows that…”).', q: 'fake', qWhy: 'It only repeats the evidence; it never explains why it matters.', pos: 2 }
+      ]
+    }
+  };
+
+  /* ---------- helpers ---------- */
+  function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+  function opts(list) { return list.map(function (o) { return '<option value="' + o.v + '">' + esc(o.t) + '</option>'; }).join(''); }
+  function safeGet(k) { try { return window.localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function safeSet(k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } }
+  function $(id) { return document.getElementById(id); }
+
+  var app = $('app');
+  var partNum = 0;
+
+  /* ---------- ANALYZE sections ---------- */
+  function buildAnalyze(key) {
+    var set = SETS[key];
+    partNum++;
+    var sec = document.createElement('section');
+    sec.id = 'analyze-' + key;
+    sec.setAttribute('aria-labelledby', 'h-analyze-' + key);
+    var rows = '';
+    set.items.forEach(function (it, i) {
+      rows += '<div class="row">' +
+        '<div class="sent"><span class="n">(' + (i + 1) + ')</span>' + esc(it.s) + '</div>' +
+        '<div class="step" id="sj-' + key + '-' + i + '">' +
+          '<label for="j-' + key + '-' + i + '">Step 1: What is this sentence trying to do?</label>' +
+          '<select id="j-' + key + '-' + i + '">' + opts(JOB_OPTIONS) + '</select>' +
+          '<div class="msg" id="mj-' + key + '-' + i + '"></div></div>' +
+        '<div class="step stage2" id="sq-' + key + '-' + i + '">' +
+          '<label for="q-' + key + '-' + i + '">Step 2: How well is it doing that job?</label>' +
+          '<select id="q-' + key + '-' + i + '">' + opts(QUAL_OPTIONS) + '</select>' +
+          '<div class="msg" id="mq-' + key + '-' + i + '"></div></div>' +
+      '</div>';
+    });
+    sec.innerHTML =
+      '<h2 id="h-analyze-' + key + '">Part ' + partNum + ': Analyze ' + esc(set.title) + '</h2>' +
+      '<p class="muted">' + esc(set.topic) + '</p>' +
+      '<p class="note"><b>Where the essay goes next:</b> ' + esc(set.next) + '</p>' +
+      '<p>The sentences are <b>mixed up</b>, so you cannot rely on their position. First decide what each sentence is <b>trying</b> to do. Then, once all the jobs are right, decide how <b>well</b> each one does it. Some sentences work fine. Some do not.</p>' +
+      '<div class="stage-title">Step 1: Find each sentence’s job</div>' +
+      rows +
+      '<div class="actions">' +
+        '<button type="button" id="cj-' + key + '">Check the jobs</button>' +
+        '<button type="button" class="secondary" id="sj-btn-' + key + '">Show the jobs</button>' +
+        '<span class="score" id="scj-' + key + '" role="status" aria-live="polite"></span>' +
+      '</div>' +
+      '<div class="stage2" id="s2wrap-' + key + '">' +
+        '<div class="stage-title">Step 2: Judge how well each sentence does its job</div>' +
+        '<p class="muted">Use the Step 2 menus above. Then press the button below.</p>' +
+        '<div class="actions">' +
+          '<button type="button" id="cq-' + key + '">Check my judgments</button>' +
+          '<button type="button" class="secondary" id="sq-btn-' + key + '">Show the answers</button>' +
+          '<button type="button" class="secondary" id="reset-' + key + '">Start over</button>' +
+          '<span class="score" id="scq-' + key + '" role="status" aria-live="polite"></span>' +
+        '</div>' +
+      '</div>';
+    app.appendChild(sec);
+
+    function unlock() {
+      set.items.forEach(function (it, i) { $('sq-' + key + '-' + i).classList.add('open'); });
+      $('s2wrap-' + key).classList.add('open');
+    }
+    function lock() {
+      set.items.forEach(function (it, i) { $('sq-' + key + '-' + i).classList.remove('open'); });
+      $('s2wrap-' + key).classList.remove('open');
+    }
+
+    function checkJobs(reveal) {
+      var right = 0, answered = 0;
+      set.items.forEach(function (it, i) {
+        var sel = $('j-' + key + '-' + i), box = $('sj-' + key + '-' + i), msg = $('mj-' + key + '-' + i);
+        if (reveal) { sel.value = it.job; }
+        box.classList.remove('ok', 'bad'); msg.textContent = '';
+        if (!sel.value) { return; }
+        answered++;
+        if (sel.value === it.job) { right++; box.classList.add('ok'); msg.textContent = '✓ ' + it.jobWhy; }
+        else { box.classList.add('bad'); msg.textContent = reveal ? it.jobWhy : JOB_HINT; }
+      });
+      var total = set.items.length, sc = $('scj-' + key);
+      if (!answered) { sc.textContent = 'Choose a job for each sentence first.'; }
+      else if (right === total) { sc.textContent = 'All ' + total + ' jobs correct. Step 2 is open below each sentence.'; unlock(); }
+      else { sc.textContent = right + ' of ' + total + ' jobs correct so far.'; }
+    }
+
+    function checkQual(reveal) {
+      var right = 0, answered = 0;
+      set.items.forEach(function (it, i) {
+        var sel = $('q-' + key + '-' + i), box = $('sq-' + key + '-' + i), msg = $('mq-' + key + '-' + i);
+        if (reveal) { sel.value = it.q; }
+        box.classList.remove('ok', 'bad'); msg.textContent = '';
+        if (!sel.value) { return; }
+        answered++;
+        if (sel.value === it.q) { right++; box.classList.add('ok'); msg.textContent = '✓ ' + it.qWhy; }
+        else { box.classList.add('bad'); msg.textContent = reveal ? it.qWhy : QUAL_HINT[sel.value]; }
+      });
+      var total = set.items.length, sc = $('scq-' + key);
+      if (!answered) { sc.textContent = 'Choose an answer for each sentence first.'; }
+      else if (right === total) { sc.textContent = 'All ' + total + ' correct. Nice work! Now go rewrite.'; }
+      else { sc.textContent = right + ' of ' + total + ' correct so far.'; }
+    }
+
+    function reset() {
+      set.items.forEach(function (it, i) {
+        ['j', 'q'].forEach(function (p) { $(p + '-' + key + '-' + i).value = ''; });
+        ['sj', 'sq'].forEach(function (p) { $(p + '-' + key + '-' + i).classList.remove('ok', 'bad'); });
+        ['mj', 'mq'].forEach(function (p) { $(p + '-' + key + '-' + i).textContent = ''; });
+      });
+      $('scj-' + key).textContent = ''; $('scq-' + key).textContent = '';
+      lock();
+    }
+
+    $('cj-' + key).addEventListener('click', function () { checkJobs(false); });
+    $('sj-btn-' + key).addEventListener('click', function () { checkJobs(true); });
+    $('cq-' + key).addEventListener('click', function () { checkQual(false); });
+    $('sq-btn-' + key).addEventListener('click', function () { checkQual(true); });
+    $('reset-' + key).addEventListener('click', reset);
+  }
+
+  /* ---------- scan helpers for rewriting ---------- */
+  var SIGNAL = ['according to', 'explains that', 'reports that', 'points out', 'argues that', 'writes that', 'states that', 'notes that', 'says that', 'as the novel', 'in the novel', 'harari', 'hinton', 'the smithsonian', 'history.com'];
+  var TRANS = ['however', 'on the other hand', 'even so', 'although', 'also', 'in addition', 'another reason', 'furthermore', 'because of this', 'as a result', 'therefore', 'but ', 'instead', 'yet ', 'for example', 'for instance'];
+  var ANALYSIS = ['this matters because', 'this shows', 'in other words', 'this suggests', 'what this means', 'this means', 'because', 'which means', 'so that'];
+  var SUMUP = ['so while', 'taken together', 'overall', 'all of this', 'in the end', 'although', 'while ', 'even though'];
+  var GLIDE = ['leads to', 'raises', 'question', 'next', 'what about', 'what can', 'why does', 'how should', 'today', 'bigger', 'future'];
+  var REASON = ['because', 'since', 'due to', 'thanks to', 'by '];
+
+  function found(text, list) { var t = text.toLowerCase(); return list.filter(function (w) { return t.indexOf(w) !== -1; }); }
+  function mark(label, hits, tip) {
+    if (hits.length) { return '✓ <b>' + label + '</b> (“' + esc(hits[0].trim()) + '”). '; }
+    return '• ' + tip + ' ';
+  }
+  function words(t) { return t.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean); }
+  function overlap(a, b) {
+    var A = words(a), B = words(b);
+    if (!A.length || !B.length) { return 0; }
+    var setB = {}; B.forEach(function (w) { setB[w] = true; });
+    var same = A.filter(function (w) { return setB[w]; }).length;
+    return same / A.length;
+  }
+  function safeGetRaw(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+
+  /* ---------- REWRITE sections (sentences shown in the correct order) ---------- */
+  function buildRewrite(key) {
+    var set = SETS[key];
+    partNum++;
+    var order = set.items.slice().sort(function (a, b) { return a.pos - b.pos; });
+    var sec = document.createElement('section');
+    sec.id = 'rewrite-' + key;
+    sec.setAttribute('aria-labelledby', 'h-rewrite-' + key);
+    var boxes = '';
+    order.forEach(function (it, i) {
+      boxes += '<div class="fixbox">' +
+        '<div class="orign"><b>(' + (i + 1) + ')</b> ' + esc(it.s) + '</div>' +
+        (it.job === 'M' ? '<p class="note"><b>Where the essay goes next:</b> ' + esc(set.next) + '</p>' : '') +
+        '<label for="f-' + it.id + '">Your version of sentence (' + (i + 1) + ')</label>' +
+        '<textarea id="f-' + it.id + '"></textarea>' +
+        '<div class="actions" style="margin-top:6px">' +
+          '<button type="button" class="secondary" id="nc-' + it.id + '">No change</button>' +
+          '<span class="muted" id="ncm-' + it.id + '" role="status" aria-live="polite"></span>' +
+        '</div></div>';
+    });
+    sec.innerHTML =
+      '<h2 id="h-rewrite-' + key + '">Part ' + partNum + ': Rewrite ' + esc(set.title) + '</h2>' +
+      '<p>The sentences are now in the correct order. If a sentence works as it is, press <b>No change</b>. If you want to fix it, type your new version in its box. If you think a sentence should be cut, type “cut” in its box.</p>' +
+      boxes +
+      '<div class="actions">' +
+        '<button type="button" id="build-' + key + '">Build my new paragraph</button>' +
+        '<button type="button" class="secondary" id="reset-rw-' + key + '">Start over</button>' +
+        '<button type="button" class="secondary" id="print-' + key + '">Print</button>' +
+      '</div>' +
+      '<div id="outwrap-' + key + '" hidden>' +
+        '<h2 style="margin-top:18px">My new paragraph</h2>' +
+        '<div class="paragraph-out" id="out-' + key + '" tabindex="0"></div>' +
+        '<div class="actions">' +
+          '<button type="button" class="secondary" id="copy-' + key + '">Copy my work</button>' +
+          '<span class="muted" id="copymsg-' + key + '" role="status" aria-live="polite"></span>' +
+        '</div>' +
+        '<p class="muted">If Copy does not work, click inside the paragraph box, select everything, and copy it yourself.</p>' +
+      '</div>';
+    app.appendChild(sec);
+
+    var nc = {};
+    function setNC(it, on) {
+      nc[it.id] = on;
+      var ta = $('f-' + it.id);
+      ta.disabled = on;
+      if (on) { ta.value = ''; }
+      $('nc-' + it.id).textContent = on ? 'Undo “No change”' : 'No change';
+      $('ncm-' + it.id).textContent = on ? '✓ No change' : '';
+      safeSet('team4-nc-' + it.id, on ? '1' : '0');
+      safeSet('team4-' + it.id, ta.value);
+    }
+    order.forEach(function (it) {
+      var ta = $('f-' + it.id);
+      var flag = safeGetRaw('team4-nc-' + it.id);
+      if (flag === '1') { setNC(it, true); }
+      else { nc[it.id] = false; var saved = safeGetRaw('team4-' + it.id); ta.value = saved !== null ? saved : ''; }
+      ta.addEventListener('input', function () { safeSet('team4-' + it.id, ta.value); });
+      $('nc-' + it.id).addEventListener('click', function () { setNC(it, !nc[it.id]); });
+    });
+
+    $('reset-rw-' + key).addEventListener('click', function () {
+      order.forEach(function (it) { setNC(it, false); $('f-' + it.id).value = ''; safeSet('team4-' + it.id, ''); });
+      $('outwrap-' + key).hidden = true;
+    });
+
+    $('build-' + key).addEventListener('click', function () {
+      var missing = [], parts = [];
+      order.forEach(function (it, i) {
+        if (nc[it.id]) { parts.push(it.s); return; }
+        var v = $('f-' + it.id).value.trim();
+        if (!v) { missing.push('(' + (i + 1) + ')'); }
+        else if (v.toLowerCase().replace(/[^a-z]/g, '') === 'cut') { /* cut: leave out */ }
+        else { parts.push(v); }
+      });
+      var out = $('out-' + key);
+      if (missing.length) { out.textContent = 'Decide about sentence ' + missing.join(', ') + ' first: type your version, type “cut”, or press No change. Then press the button again.'; }
+      else { var who = $('name').value.trim(); out.textContent = (who ? who + '\n\n' : '') + parts.join(' '); }
+      $('outwrap-' + key).hidden = false;
+      out.focus();
+    });
+    $('print-' + key).addEventListener('click', function () { try { window.print(); } catch (e) { /* ignore */ } });
+    $('copy-' + key).addEventListener('click', function () {
+      var msg = $('copymsg-' + key), node = $('out-' + key), text = node.textContent;
+      function fallback() {
+        var range = document.createRange(); range.selectNodeContents(node);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+        msg.textContent = 'Selected. Press Ctrl+C (or Cmd+C) to copy.';
+      }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { msg.textContent = 'Copied!'; }, fallback);
+        } else { fallback(); }
+      } catch (e) { fallback(); }
+    });
+  }
+
+  /* ---------- assemble the page in the requested order ---------- */
+  buildAnalyze('b');
+  buildRewrite('b');
+  buildAnalyze('c');
+  buildRewrite('c');
+
+  /* ---------- one part per page ---------- */
+  var pages = Array.prototype.slice.call(app.querySelectorAll('section'));
+  var progress = document.createElement('p');
+  progress.className = 'muted';
+  progress.setAttribute('role', 'status');
+  app.insertBefore(progress, app.firstChild);
+  pages.forEach(function (sec, i) {
+    var nav = document.createElement('div');
+    nav.className = 'actions pagenav';
+    var html = '';
+    if (i > 0) { html += '<button type="button" class="secondary" data-go="' + (i - 1) + '">← Back</button>'; }
+    if (i < pages.length - 1) { html += '<button type="button" data-go="' + (i + 1) + '">Next: Part ' + (i + 2) + ' →</button>'; }
+    else { html += '<span class="muted">That is the last part.</span>'; }
+    nav.innerHTML = html;
+    sec.appendChild(nav);
+  });
+  function show(n) {
+    pages.forEach(function (sec, i) { sec.hidden = (i !== n); });
+    progress.textContent = 'Part ' + (n + 1) + ' of ' + pages.length;
+    var hd = pages[n].querySelector('h2');
+    if (hd) { hd.setAttribute('tabindex', '-1'); hd.focus(); }
+    try { window.scrollTo(0, 0); } catch (e) { /* ignore */ }
+  }
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-go]') : null;
+    if (b) { show(parseInt(b.getAttribute('data-go'), 10)); }
+  });
+  show(0);
+
+  var nameEl = $('name');
+  nameEl.value = safeGet('team2-name');
+  nameEl.addEventListener('input', function () { safeSet('team2-name', nameEl.value); });
+})();
+</script>
+</body>
+</html>

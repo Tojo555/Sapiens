@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
 <style>
-  /* Layout: a short title block, then one row per game in reading order, like a table of contents. */
+  /* Layout: a short title block, then two lists like a table of contents: reading games by chapter, then writing tools in the order they were taught. */
   :root {
     --bg: #f5f2ec; --surface: #ffffff; --surface-2: #ece6dc; --text: #251f1d;
     --muted: #675d57; --border: #ddd3c6; --accent: #6e2c5c; --accent-ink: #ffffff; --gold: #9a6c14;
@@ -25,29 +25,33 @@
   body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 17px; line-height: 1.5; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 14px 16px 48px; }
   .stamp { text-align: right; font-size: 12.5px; font-style: italic; color: var(--muted); margin: 0 0 18px; }
-  header { margin-bottom: 26px; }
+  header { margin-bottom: 28px; }
   .eyebrow { font-family: var(--display); font-size: 13px; letter-spacing: 0.08em; color: var(--gold); margin: 0 0 4px; }
-  h1 { font-family: var(--display); font-size: 40px; line-height: 1.1; margin: 0 0 10px; color: var(--accent); letter-spacing: 0.02em; }
+  h1 { font-family: var(--display); font-size: 40px; line-height: 1.1; margin: 0 0 10px; color: var(--accent); letter-spacing: 0.02em; text-wrap: balance; }
   .lede { margin: 0; color: var(--muted); max-width: 60ch; }
+  section { margin-top: 30px; }
+  section > h2 { font-family: var(--display); font-size: 20px; letter-spacing: 0.04em; margin: 0 0 4px; color: var(--text); }
+  section > p { margin: 0 0 14px; color: var(--muted); font-size: 15.5px; }
   ol.games { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
   .game { display: grid; grid-template-columns: 76px 1fr auto; gap: 16px; align-items: center;
     background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
   .ch { text-align: center; border-right: 1px solid var(--border); padding-right: 14px; }
   .ch small { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-  .ch span { font-family: var(--display); font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .ch span { font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; white-space: nowrap; }
   .info { min-width: 0; }
-  .info h2 { font-family: var(--serif); font-size: 21px; margin: 0 0 2px; }
+  .info h3 { font-family: var(--serif); font-size: 21px; margin: 0 0 2px; }
   .info .reading { font-size: 14px; color: var(--muted); margin: 0 0 6px; }
   .info p { margin: 0; font-size: 15.5px; }
   a.play { display: inline-block; text-decoration: none; background: var(--accent); color: var(--accent-ink);
     font-weight: 700; border-radius: 10px; padding: 9px 16px; white-space: nowrap; }
+  a.play.alt { background: transparent; color: var(--accent); border: 2px solid var(--accent); padding: 7px 14px; }
   a.play:hover { filter: brightness(1.08); }
   a.play:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-  footer { margin-top: 28px; font-size: 13px; color: var(--muted); text-align: center; }
+  footer { margin-top: 32px; font-size: 13px; color: var(--muted); text-align: center; }
   @media (max-width: 520px) {
     h1 { font-size: 32px; }
-    .game { grid-template-columns: 56px 1fr; }
-    .ch span { font-size: 24px; }
+    .game { grid-template-columns: 60px 1fr; }
+    .ch span { font-size: 22px; }
     .game .go { grid-column: 1 / -1; }
     a.play { display: block; text-align: center; }
   }
@@ -60,33 +64,89 @@
   <header>
     <p class="eyebrow">Close Reading &amp; Argument Writing</p>
     <h1>Sapiens Quest</h1>
-    <p class="lede">Reading games for Yuval Noah Harari’s <em>Sapiens</em>. Each one checks the homework reading, then pushes into claims, evidence and argument. Play them in order, or pick the chapter you just read.</p>
+    <p class="lede">Reading games and writing tools for Yuval Noah Harari’s <em>Sapiens</em>. The reading games check each homework chapter and push into claims and evidence. The writing tools build TEAM paragraphs step by step.</p>
   </header>
 
-  <ol class="games">
-    <!-- To add a game: copy one <li> block, change the chapter number, titles, description and file name, and keep the list in chapter order. -->
-    <li class="game">
-      <div class="ch"><small>Chapter</small><span>6</span></div>
-      <div class="info">
-        <h2>The Pyramid Quest</h2>
-        <p class="reading">“Building Pyramids”</p>
-        <p>Imagined orders, the three “prison walls,” and objective vs. subjective vs. intersubjective.</p>
-      </div>
-      <div class="go"><a class="play" href="sapiens_quest_pyramid_quest.html">Play ▶</a></div>
-    </li>
+  <!-- To add a page: copy one <li> block, change the label, titles, description and file name, and keep each list in order. -->
 
-    <li class="game">
-      <div class="ch"><small>Chapter</small><span>11</span></div>
-      <div class="info">
-        <h2>The Emperor’s Road</h2>
-        <p class="reading">“Imperial Visions”</p>
-        <p>Harari’s definition of empire, story vs. claim, weighing evidence, and a Boss Round before the Emperor.</p>
-      </div>
-      <div class="go"><a class="play" href="sapiens_quest_emperors_road.html">Play ▶</a></div>
-    </li>
-  </ol>
+  <section aria-labelledby="games-h">
+    <h2 id="games-h">Reading Games</h2>
+    <p>One game per chapter, in reading order. Written answers are scored with Mr. Johnson.</p>
+    <ol class="games">
+      <li class="game">
+        <div class="ch"><small>Chapter</small><span>5</span></div>
+        <div class="info">
+          <h3>The Great Wheat Heist</h3>
+          <p class="reading">“History’s Biggest Fraud”</p>
+          <p>Was the Agricultural Revolution a scam? Track down how wheat “domesticated” Sapiens.</p>
+        </div>
+        <div class="go"><a class="play" href="sapiens_quest_wheat_heist.html">Play ▶</a></div>
+      </li>
+      <li class="game">
+        <div class="ch"><small>Chapter</small><span>6</span></div>
+        <div class="info">
+          <h3>The Pyramid Quest</h3>
+          <p class="reading">“Building Pyramids”</p>
+          <p>Imagined orders, the three “prison walls,” and objective vs. subjective vs. intersubjective.</p>
+        </div>
+        <div class="go"><a class="play" href="sapiens_quest_pyramid_quest.html">Play ▶</a></div>
+      </li>
+      <li class="game">
+        <div class="ch"><small>Chapter</small><span>10</span></div>
+        <div class="info">
+          <h3>The Marketplace of Trust</h3>
+          <p class="reading">“The Scent of Money”</p>
+          <p>Why strangers trust coins and paper, and how money became a universal order.</p>
+        </div>
+        <div class="go"><a class="play" href="sapiens_quest_marketplace_of_trust.html">Play ▶</a></div>
+      </li>
+      <li class="game">
+        <div class="ch"><small>Chapter</small><span>11</span></div>
+        <div class="info">
+          <h3>The Emperor’s Road</h3>
+          <p class="reading">“Imperial Visions”</p>
+          <p>Harari’s definition of empire, story vs. claim, weighing evidence, and a Boss Round before the Emperor.</p>
+        </div>
+        <div class="go"><a class="play" href="sapiens_quest_emperors_road.html">Play ▶</a></div>
+      </li>
+    </ol>
+  </section>
 
-  <footer>Sapiens Quest · Games are best played with Mr. Johnson, who scores the written answers.</footer>
+  <section aria-labelledby="writing-h">
+    <h2 id="writing-h">Writing Workshop</h2>
+    <p>Tools for building TEAM paragraphs: Topic sentence, Evidence, Analysis, Merging.</p>
+    <ol class="games">
+      <li class="game">
+        <div class="ch"><small>Step</small><span>1</span></div>
+        <div class="info">
+          <h3>Build the T.E.A.M. Paragraph</h3>
+          <p class="reading">Putting the parts in order</p>
+          <p>A low-stakes warm-up, then three paragraphs from <em>Sapiens</em> to assemble sentence by sentence.</p>
+        </div>
+        <div class="go"><a class="play alt" href="build-the-team-paragraph.html">Open ▶</a></div>
+      </li>
+      <li class="game">
+        <div class="ch"><small>Step</small><span>2</span></div>
+        <div class="info">
+          <h3>Signal Phrase Studio</h3>
+          <p class="reading">Introducing evidence</p>
+          <p>What separates a weak signal phrase from a strong one, then using them to build paragraphs.</p>
+        </div>
+        <div class="go"><a class="play alt" href="signal-phrase-studio.html">Open ▶</a></div>
+      </li>
+      <li class="game">
+        <div class="ch"><small>Step</small><span>3</span></div>
+        <div class="info">
+          <h3>TEAM Practice: Analyze and Rewrite</h3>
+          <p class="reading">Judging and fixing sentences</p>
+          <p>Identify each sentence’s job, judge whether it works, and rewrite the weak ones.</p>
+        </div>
+        <div class="go"><a class="play alt" href="team-practice-analyze-and-rewrite.html">Open ▶</a></div>
+      </li>
+    </ol>
+  </section>
+
+  <footer>Sapiens Quest · Best used with Mr. Johnson, who scores the written answers.</footer>
 </div>
 </body>
 </html>
